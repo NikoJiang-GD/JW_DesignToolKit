@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情绪曲线工具 - 游戏设计工具合集</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-content h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .back-link {
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            transition: opacity 0.3s ease;
+        }
+        
+        .back-link:hover {
+            opacity: 0.8;
+        }
+        
+        .back-link svg {
+            margin-right: 8px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .chart-section {
+            flex: 1;
+            min-height: 600px;
+            order: 1;
+        }
+        
+        .input-section {
+            order: 2;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .input-section h2 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            align-items: end;
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .form-row:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+            font-size: 0.9rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #333;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            background-color: #fff;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-select:focus {
+            outline: none;
+            border-color: #333;
+        }
+        
+        .emoji-selector {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .emoji-option {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #fff;
+        }
+        
+        .emoji-option:hover {
+            border-color: #333;
+            background-color: #f0f0f0;
+        }
+        
+        .emoji-option.selected {
+            border-color: #333;
+            background-color: #e0e0e0;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: #333;
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background-color: #555;
+        }
+        
+        .btn-secondary {
+            background-color: #999;
+            color: #fff;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #777;
+        }
+        
+        .btn-danger {
+            background-color: #666;
+            color: #fff;
+        }
+        
+        .btn-danger:hover {
+            background-color: #444;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .data-item-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .chart-section {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .chart-section h2 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 500px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+            overflow: hidden;
+        }
+        
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        .data-list {
+            margin-top: 20px;
+        }
+        
+        .data-item {
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .data-item-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .data-item-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .data-item-emoji {
+            font-size: 1.5rem;
+        }
+        
+        .data-item-details {
+            flex: 1;
+        }
+        
+        .data-item-details h3 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .data-item-details p {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #333;
+            color: #fff;
+            border-radius: 8px;
+            margin-top: 40px;
+        }
+        
+        footer p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-container {
+                height: 400px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header-content h1 {
+                font-size: 1.5rem;
+            }
+            
+            .input-section,
+            .chart-section {
+                padding: 20px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .chart-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <a href="index.html" class="back-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 11H7.83L13.42 5.41L12 4L4 12L12 20L13.41 18.59L7.83 13H20V11Z" fill="currentColor"/>
+                    </svg>
+                    返回首页
+                </a>
+                <h1>情绪曲线工具</h1>
+                <div></div>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <h2>数据输入</h2>
+                
+                <div class="form-group">
+                    <div id="form-rows">
+                        <div class="form-row" data-index="0">
+                            <div>
+                                    <label class="form-label">时间轴节点 (分:秒)</label>
+                                    <div style="display: flex; gap: 10px; align-items: center;">
+                                        <input type="number" class="form-input timeline-minute" placeholder="0" min="0" value="0" style="flex: 1;">
+                                        <span style="font-weight: bold;">:</span>
+                                        <input type="number" class="form-input timeline-second" placeholder="0" min="0" max="59" value="0" style="flex: 1;">
+                                    </div>
+                                </div>
+                            <div>
+                                <label class="form-label">事件</label>
+                                <input type="text" class="form-input event" placeholder="游戏事件" value="游戏开始">
+                            </div>
+                            <div>
+                                <label class="form-label">情绪反馈</label>
+                                <select class="form-select emotion">
+                                    <option value="excitement">兴奋</option>
+                                    <option value="tension">紧张</option>
+                                    <option value="joy">愉悦</option>
+                                    <option value="sadness">悲伤</option>
+                                    <option value="fear">恐惧</option>
+                                    <option value="anger">愤怒</option>
+                                    <option value="surprise">惊讶</option>
+                                    <option value="anticipation">期待</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">情绪强度</label>
+                                <input type="number" class="form-input intensity" placeholder="1-10" min="1" max="10" value="5">
+                            </div>
+                            <div>
+                                <label class="form-label">选择Emoji</label>
+                                <div class="emoji-selector">
+                                    <div class="emoji-option" data-emoji="😊">😊</div>
+                                    <div class="emoji-option" data-emoji="😮">😮</div>
+                                    <div class="emoji-option" data-emoji="😢">😢</div>
+                                    <div class="emoji-option" data-emoji="😠">😠</div>
+                                    <div class="emoji-option" data-emoji="😨">😨</div>
+                                </div>
+                                <input type="hidden" class="emoji-input" value="😊">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="add-row">添加数据行</button>
+                    <button class="btn btn-secondary" id="update-chart">更新曲线</button>
+                </div>
+            </div>
+            
+            <div class="chart-section">
+                <h2>情绪曲线</h2>
+                <div class="chart-container">
+                    <canvas id="emotion-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>&copy; 2026 游戏设计工具合集 | 情绪曲线工具</p>
+        </footer>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <script>
+        // 全局变量
+        let emotionChart;
+        let infoLabels = [];
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 绑定添加数据行按钮事件
+            document.getElementById('add-row').addEventListener('click', addDataRow);
+            
+            // 绑定更新曲线按钮事件
+            document.getElementById('update-chart').addEventListener('click', function() {
+                updateChart();
+                updateInfoLabels();
+            });
+            
+            // 初始化emoji选择器
+            initEmojiSelectors();
+            
+            // 初始化图表
+            initChart();
+            
+            // 初始更新图表
+            updateChart();
+            
+            // 初始更新信息标签
+            updateInfoLabels();
+        });
+        
+        // 初始化emoji选择器
+        function initEmojiSelectors() {
+            document.querySelectorAll('.emoji-selector').forEach(selector => {
+                selector.querySelectorAll('.emoji-option').forEach(option => {
+                    option.addEventListener('click', function() {
+                        // 移除同组其他选项的选中状态
+                        this.parentElement.querySelectorAll('.emoji-option').forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                        // 添加当前选项的选中状态
+                        this.classList.add('selected');
+                        // 更新隐藏输入框
+                        const emojiInput = this.closest('.form-row').querySelector('.emoji-input');
+                        if (emojiInput) {
+                            emojiInput.value = this.dataset.emoji;
+                        }
+                    });
+                });
+                
+                // 默认选中第一个emoji
+                const firstOption = selector.querySelector('.emoji-option');
+                if (firstOption) {
+                    firstOption.classList.add('selected');
+                }
+            });
+        }
+        
+        // 添加数据行
+        function addDataRow() {
+            const formRows = document.getElementById('form-rows');
+            const newIndex = formRows.children.length;
+            const totalSeconds = newIndex * 60;
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            
+            const newRow = document.createElement('div');
+            newRow.className = 'form-row';
+            
+            newRow.innerHTML = `
+                <div>
+                    <label class="form-label">时间轴节点 (分:秒)</label>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="number" class="form-input timeline-minute" placeholder="0" min="0" value="${minutes}" style="flex: 1;">
+                        <span style="font-weight: bold;">:</span>
+                        <input type="number" class="form-input timeline-second" placeholder="0" min="0" max="59" value="${seconds}" style="flex: 1;">
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">事件</label>
+                    <input type="text" class="form-input event" placeholder="游戏事件">
+                </div>
+                <div>
+                    <label class="form-label">情绪反馈</label>
+                    <select class="form-select emotion">
+                        <option value="excitement">兴奋</option>
+                        <option value="tension">紧张</option>
+                        <option value="joy">愉悦</option>
+                        <option value="sadness">悲伤</option>
+                        <option value="fear">恐惧</option>
+                        <option value="anger">愤怒</option>
+                        <option value="surprise">惊讶</option>
+                        <option value="anticipation">期待</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">情绪强度</label>
+                    <input type="number" class="form-input intensity" min="1" max="10" value="5">
+                </div>
+                <div>
+                    <label class="form-label">选择Emoji</label>
+                    <div class="emoji-selector">
+                        <div class="emoji-option selected" data-emoji="😊">😊</div>
+                        <div class="emoji-option" data-emoji="😮">😮</div>
+                        <div class="emoji-option" data-emoji="😢">😢</div>
+                        <div class="emoji-option" data-emoji="😠">😠</div>
+                        <div class="emoji-option" data-emoji="😨">😨</div>
+                    </div>
+                    <input type="hidden" class="emoji-input" value="😊">
+                </div>
+                <div style="display: flex; align-items: flex-end;">
+                    <button class="btn btn-secondary btn-sm" style="width: 100%;">删除</button>
+                </div>
+            `;
+            
+            formRows.appendChild(newRow);
+            
+            // 绑定删除按钮事件
+            const deleteBtn = newRow.querySelector('.btn-sm');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', function() {
+                    newRow.remove();
+                    updateChart();
+                });
+            }
+            
+            // 初始化新添加的emoji选择器
+            initEmojiSelectors();
+        }
+        
+        // 初始化图表
+        function initChart() {
+            try {
+                const canvas = document.getElementById('emotion-chart');
+                if (!canvas) {
+                    console.error('Canvas元素未找到');
+                    return;
+                }
+                
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                    console.error('Canvas上下文未获取');
+                    return;
+                }
+                
+                if (!window.Chart) {
+                    console.error('Chart.js未加载');
+                    return;
+                }
+                
+                emotionChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: '情绪强度',
+                            data: [],
+                            borderColor: '#333',
+                            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            pointBackgroundColor: '#333',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            tooltip: {
+                                enabled: false // 禁用tooltip，因为我们有常驻的信息标签
+                            },
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 10,
+                                title: {
+                                    display: true,
+                                    text: '情绪强度'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: '时间轴节点 (分:秒)'
+                                },
+                                ticks: {
+                                    maxRotation: 45,
+                                    minRotation: 45
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                console.log('图表初始化成功');
+            } catch (error) {
+                console.error('图表初始化失败:', error);
+            }
+        }
+        
+        // 更新图表
+        function updateChart() {
+            try {
+                if (!emotionChart) {
+                    console.error('图表未初始化');
+                    return;
+                }
+                
+                const dataRows = document.querySelectorAll('.form-row');
+                const labels = [];
+                const data = [];
+                
+                dataRows.forEach(row => {
+                    const minuteInput = row.querySelector('.timeline-minute');
+                    const secondInput = row.querySelector('.timeline-second');
+                    const intensityInput = row.querySelector('.intensity');
+                    
+                    if (!minuteInput || !secondInput || !intensityInput) {
+                        return;
+                    }
+                    
+                    const minute = parseInt(minuteInput.value) || 0;
+                    const second = parseInt(secondInput.value) || 0;
+                    const displayTime = `${minute.toString().padStart(2, '0')}:${second.toString().padStart(2, '0')}`;
+                    const intensity = parseInt(intensityInput.value) || 0;
+                    
+                    labels.push(displayTime);
+                    data.push(intensity);
+                });
+                
+                if (labels.length === 0 || data.length === 0) {
+                    return;
+                }
+                
+                emotionChart.data.labels = labels;
+                emotionChart.data.datasets[0].data = data;
+                emotionChart.update();
+            } catch (error) {
+                console.error('图表更新失败:', error);
+            }
+        }
+        
+        // 更新信息标签
+        function updateInfoLabels() {
+            // 清除旧的信息标签
+            infoLabels.forEach(label => {
+                if (label && label.parentNode) {
+                    label.parentNode.removeChild(label);
+                }
+            });
+            infoLabels = [];
+            
+            if (!emotionChart) return;
+            
+            const chartContainer = document.querySelector('.chart-container');
+            if (!chartContainer) return;
+            
+            const dataRows = document.querySelectorAll('.form-row');
+            if (dataRows.length === 0) return;
+            
+            // 获取图表实例
+            const chartInstance = emotionChart;
+            const chartArea = chartInstance.chartArea;
+            const meta = chartInstance.getDatasetMeta(0);
+            
+            // 为每个数据点创建信息标签
+            meta.data.forEach((point, index) => {
+                if (index >= dataRows.length) return;
+                
+                const row = dataRows[index];
+                const event = row.querySelector('.event').value || '无事件';
+                const intensity = row.querySelector('.intensity').value || '0';
+                const emoji = row.querySelector('.emoji-input').value || '😊';
+                
+                // 创建信息标签元素
+                const infoLabel = document.createElement('div');
+                infoLabel.style.position = 'absolute';
+                infoLabel.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+                infoLabel.style.border = '1px solid #333';
+                infoLabel.style.borderRadius = '4px';
+                infoLabel.style.padding = '5px 8px';
+                infoLabel.style.fontSize = '12px';
+                infoLabel.style.color = '#333';
+                infoLabel.style.whiteSpace = 'nowrap';
+                infoLabel.style.zIndex = '100';
+                infoLabel.style.pointerEvents = 'none';
+                infoLabel.innerHTML = `${event}<br>${emoji} ${intensity}`;
+                
+                // 计算标签位置
+                const x = point.x;
+                const y = point.y - 10;
+                
+                infoLabel.style.left = `${x}px`;
+                infoLabel.style.top = `${y}px`;
+                infoLabel.style.transform = 'translate(-50%, -100%)';
+                
+                // 添加到图表容器
+                chartContainer.appendChild(infoLabel);
+                infoLabels.push(infoLabel);
+            });
+        }
+        
+        // 监听窗口大小变化，重新定位标签
+        window.addEventListener('resize', function() {
+            setTimeout(() => {
+                updateInfoLabels();
+            }, 100);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏设计工具合集</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            background-color: #333;
+            color: #fff;
+            margin-bottom: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .tool-card {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #333;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            border-color: #333;
+        }
+        
+        .tool-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+            text-align: center;
+        }
+        
+        .tool-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .tool-card p {
+            color: #666;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            background-color: #555;
+        }
+        
+        .btn-container {
+            text-align: center;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: #333;
+            color: #fff;
+            border-radius: 8px;
+            margin-top: 60px;
+        }
+        
+        footer p {
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: 40px 20px;
+            }
+            
+            header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>NikoJiang GameDesignToolKit</h1>
+            <p>专为游戏设计师打造的实用工具</p>
+        </header>
+        
+        <section class="tools-grid">
+            <a href="emotion-curve.html" class="tool-card">
+                <div class="tool-icon">📊</div>
+                <h2>情绪曲线工具</h2>
+                <p>通过时间轴节点、事件和情绪数据，绘制游戏情绪曲线，帮助你优化游戏体验</p>
+                <div class="btn-container">
+                    <span class="btn">使用工具</span>
+                </div>
+            </a>
+            
+            <div class="tool-card">
+                <div class="tool-icon">🔄</div>
+                <h2>更多工具</h2>
+                <p>即将推出更多游戏设计相关工具，敬请期待</p>
+                <div class="btn-container">
+                    <span class="btn" style="background-color: #999; cursor: not-allowed;">开发中</span>
+                </div>
+            </div>
+            
+            <div class="tool-card">
+                <div class="tool-icon">🔄</div>
+                <h2>更多工具</h2>
+                <p>即将推出更多游戏设计相关工具，敬请期待</p>
+                <div class="btn-container">
+                    <span class="btn" style="background-color: #999; cursor: not-allowed;">开发中</span>
+                </div>
+            </div>
+        </section>
+        
+        <footer>
+            <p>&copy; 2026 游戏设计工具合集 | 黑白灰主题</p>
+        </footer>
+    </div>
+</body>
+</html>

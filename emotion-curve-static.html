@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情绪曲线工具（静态版） - NikoJiang GameDesignToolKit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-content h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .back-link {
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            transition: opacity 0.3s ease;
+        }
+        
+        .back-link:hover {
+            opacity: 0.8;
+        }
+        
+        .back-link svg {
+            margin-right: 8px;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .input-section {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .input-section h2 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            align-items: end;
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .form-row:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+            font-size: 0.9rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #333;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            background-color: #fff;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-select:focus {
+            outline: none;
+            border-color: #333;
+        }
+        
+        .emoji-selector {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .emoji-option {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #fff;
+        }
+        
+        .emoji-option:hover {
+            border-color: #333;
+            background-color: #f0f0f0;
+        }
+        
+        .emoji-option.selected {
+            border-color: #333;
+            background-color: #e0e0e0;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: #333;
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background-color: #555;
+        }
+        
+        .btn-secondary {
+            background-color: #999;
+            color: #fff;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #777;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .data-item-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .chart-section {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .chart-section h2 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 500px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+            overflow: hidden;
+        }
+        
+        .svg-chart {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .chart-grid {
+            stroke: #e0e0e0;
+            stroke-width: 1;
+            stroke-dasharray: 2 2;
+        }
+        
+        .chart-line {
+            stroke: #333;
+            stroke-width: 2;
+            fill: none;
+        }
+        
+        .chart-point {
+            fill: #333;
+            stroke: #fff;
+            stroke-width: 2;
+        }
+        
+        .chart-point:hover {
+            r: 8;
+        }
+        
+        .chart-label {
+            font-size: 12px;
+            fill: #666;
+            text-anchor: middle;
+        }
+        
+        .chart-tooltip {
+            position: absolute;
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+        }
+        
+        .data-list {
+            margin-top: 20px;
+        }
+        
+        .data-item {
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .data-item-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .data-item-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .data-item-emoji {
+            font-size: 1.5rem;
+        }
+        
+        .data-item-details {
+            flex: 1;
+        }
+        
+        .data-item-details h3 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .data-item-details p {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #333;
+            color: #fff;
+            border-radius: 8px;
+            margin-top: 40px;
+        }
+        
+        footer p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-container {
+                height: 400px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header-content h1 {
+                font-size: 1.5rem;
+            }
+            
+            .input-section,
+            .chart-section {
+                padding: 20px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .chart-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <a href="index.html" class="back-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M20 11H7.83L13.42 5.41L12 4L4 12L12 20L13.41 18.59L7.83 13H20V11Z" fill="currentColor"/>
+                    </svg>
+                    返回首页
+                </a>
+                <h1>情绪曲线工具（静态版）</h1>
+                <div></div>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <h2>数据输入</h2>
+                
+                <form action="#" method="get">
+                    <div class="form-group">
+                        <div id="form-rows">
+                            <!-- 数据行1 -->
+                            <div class="form-row">
+                                <div>
+                                    <label class="form-label">时间轴节点</label>
+                                    <input type="number" name="node[]" class="form-input timeline-node" min="0" value="0">
+                                </div>
+                                <div>
+                                    <label class="form-label">事件</label>
+                                    <input type="text" name="event[]" class="form-input event" value="游戏开始">
+                                </div>
+                                <div>
+                                    <label class="form-label">情绪强度</label>
+                                    <input type="number" name="intensity[]" class="form-input intensity" min="1" max="10" value="5">
+                                </div>
+                                <div>
+                                    <label class="form-label">选择Emoji</label>
+                                    <div class="emoji-selector">
+                                        <div class="emoji-option selected" data-emoji="😊">😊</div>
+                                        <div class="emoji-option" data-emoji="😮">😮</div>
+                                        <div class="emoji-option" data-emoji="😢">😢</div>
+                                        <div class="emoji-option" data-emoji="😠">😠</div>
+                                        <div class="emoji-option" data-emoji="😨">😨</div>
+                                    </div>
+                                    <input type="hidden" name="emoji[]" class="emoji-input" value="😊">
+                                </div>
+                            </div>
+                            
+                            <!-- 数据行2 -->
+                            <div class="form-row">
+                                <div>
+                                    <label class="form-label">时间轴节点</label>
+                                    <input type="number" name="node[]" class="form-input timeline-node" min="0" value="10">
+                                </div>
+                                <div>
+                                    <label class="form-label">事件</label>
+                                    <input type="text" name="event[]" class="form-input event" value="第一个敌人">
+                                </div>
+                                <div>
+                                    <label class="form-label">情绪强度</label>
+                                    <input type="number" name="intensity[]" class="form-input intensity" min="1" max="10" value="7">
+                                </div>
+                                <div>
+                                    <label class="form-label">选择Emoji</label>
+                                    <div class="emoji-selector">
+                                        <div class="emoji-option" data-emoji="😊">😊</div>
+                                        <div class="emoji-option selected" data-emoji="😮">😮</div>
+                                        <div class="emoji-option" data-emoji="😢">😢</div>
+                                        <div class="emoji-option" data-emoji="😠">😠</div>
+                                        <div class="emoji-option" data-emoji="😨">😨</div>
+                                    </div>
+                                    <input type="hidden" name="emoji[]" class="emoji-input" value="😮">
+                                </div>
+                            </div>
+                            
+                            <!-- 数据行3 -->
+                            <div class="form-row">
+                                <div>
+                                    <label class="form-label">时间轴节点</label>
+                                    <input type="number" name="node[]" class="form-input timeline-node" min="0" value="20">
+                                </div>
+                                <div>
+                                    <label class="form-label">事件</label>
+                                    <input type="text" name="event[]" class="form-input event" value="关卡BOSS">
+                                </div>
+                                <div>
+                                    <label class="form-label">情绪强度</label>
+                                    <input type="number" name="intensity[]" class="form-input intensity" min="1" max="10" value="9">
+                                </div>
+                                <div>
+                                    <label class="form-label">选择Emoji</label>
+                                    <div class="emoji-selector">
+                                        <div class="emoji-option" data-emoji="😊">😊</div>
+                                        <div class="emoji-option" data-emoji="😮">😮</div>
+                                        <div class="emoji-option" data-emoji="😢">😢</div>
+                                        <div class="emoji-option selected" data-emoji="😠">😠</div>
+                                        <div class="emoji-option" data-emoji="😨">😨</div>
+                                    </div>
+                                    <input type="hidden" name="emoji[]" class="emoji-input" value="😠">
+                                </div>
+                            </div>
+                            
+                            <!-- 数据行4 -->
+                            <div class="form-row">
+                                <div>
+                                    <label class="form-label">时间轴节点</label>
+                                    <input type="number" name="node[]" class="form-input timeline-node" min="0" value="30">
+                                </div>
+                                <div>
+                                    <label class="form-label">事件</label>
+                                    <input type="text" name="event[]" class="form-input event" value="游戏结束">
+                                </div>
+                                <div>
+                                    <label class="form-label">情绪强度</label>
+                                    <input type="number" name="intensity[]" class="form-input intensity" min="1" max="10" value="6">
+                                </div>
+                                <div>
+                                    <label class="form-label">选择Emoji</label>
+                                    <div class="emoji-selector">
+                                        <div class="emoji-option selected" data-emoji="😊">😊</div>
+                                        <div class="emoji-option" data-emoji="😮">😮</div>
+                                        <div class="emoji-option" data-emoji="😢">😢</div>
+                                        <div class="emoji-option" data-emoji="😠">😠</div>
+                                        <div class="emoji-option" data-emoji="😨">😨</div>
+                                    </div>
+                                    <input type="hidden" name="emoji[]" class="emoji-input" value="😊">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">更新曲线</button>
+                        <button type="button" class="btn btn-secondary" onclick="addFormRow()">添加数据行</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="chart-section">
+                <h2>情绪曲线</h2>
+                <div class="chart-container">
+                    <svg class="svg-chart" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+                        <!-- 网格线 -->
+                        <g class="chart-grid">
+                            <line x1="50" y1="50" x2="750" y2="50" />
+                            <line x1="50" y1="100" x2="750" y2="100" />
+                            <line x1="50" y1="150" x2="750" y2="150" />
+                            <line x1="50" y1="200" x2="750" y2="200" />
+                            <line x1="50" y1="250" x2="750" y2="250" />
+                            <line x1="50" y1="300" x2="750" y2="300" />
+                            <line x1="50" y1="350" x2="750" y2="350" />
+                            <line x1="50" y1="50" x2="50" y2="350" />
+                            <line x1="150" y1="50" x2="150" y2="350" />
+                            <line x1="250" y1="50" x2="250" y2="350" />
+                            <line x1="350" y1="50" x2="350" y2="350" />
+                            <line x1="450" y1="50" x2="450" y2="350" />
+                            <line x1="550" y1="50" x2="550" y2="350" />
+                            <line x1="650" y1="50" x2="650" y2="350" />
+                            <line x1="750" y1="50" x2="750" y2="350" />
+                        </g>
+                        
+                        <!-- 坐标轴标签 -->
+                        <text x="400" y="380" text-anchor="middle" font-size="12" fill="#666">时间轴节点</text>
+                        <text x="30" y="200" text-anchor="middle" font-size="12" fill="#666" transform="rotate(-90, 30, 200)">情绪强度</text>
+                        
+                        <!-- 情绪曲线 -->
+                        <path class="chart-line" d="M 50 200 L 200 140 L 350 80 L 500 160" />
+                        
+                        <!-- 数据点 -->
+                        <circle class="chart-point" cx="50" cy="200" r="6" title="游戏开始 (5) 😊" />
+                        <circle class="chart-point" cx="200" cy="140" r="6" title="第一个敌人 (7) 😮" />
+                        <circle class="chart-point" cx="350" cy="80" r="6" title="关卡BOSS (9) 😠" />
+                        <circle class="chart-point" cx="500" cy="160" r="6" title="游戏结束 (6) 😊" />
+                        
+                        <!-- 数据点标签 -->
+                        <text class="chart-label" x="50" y="220">0</text>
+                        <text class="chart-label" x="200" y="220">10</text>
+                        <text class="chart-label" x="350" y="220">20</text>
+                        <text class="chart-label" x="500" y="220">30</text>
+                    </svg>
+                    
+                    <div class="chart-tooltip" id="tooltip"></div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>&copy; 2026 NikoJiang GameDesignToolKit | 情绪曲线工具（静态版）</p>
+        </footer>
+    </div>
+    
+    <script>
+        // 仅用于基本的交互功能，不用于图表绘制
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化emoji选择器
+            initEmojiSelectors();
+            
+            // 简单的tooltip功能
+            initTooltips();
+        });
+        
+        // 初始化emoji选择器
+        function initEmojiSelectors() {
+            document.querySelectorAll('.emoji-selector').forEach(selector => {
+                selector.querySelectorAll('.emoji-option').forEach(option => {
+                    option.addEventListener('click', function() {
+                        // 移除同组其他选项的选中状态
+                        this.parentElement.querySelectorAll('.emoji-option').forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                        // 添加当前选项的选中状态
+                        this.classList.add('selected');
+                        // 更新隐藏输入框
+                        const emojiInput = this.closest('.form-row').querySelector('.emoji-input');
+                        if (emojiInput) {
+                            emojiInput.value = this.dataset.emoji;
+                        }
+                    });
+                });
+            });
+        }
+        
+        // 初始化tooltip
+        function initTooltips() {
+            const points = document.querySelectorAll('.chart-point');
+            const tooltip = document.getElementById('tooltip');
+            
+            points.forEach(point => {
+                point.addEventListener('mouseover', function(e) {
+                    const title = this.getAttribute('title');
+                    if (title) {
+                        tooltip.textContent = title;
+                        tooltip.style.opacity = '1';
+                        tooltip.style.left = (e.pageX + 10) + 'px';
+                        tooltip.style.top = (e.pageY + 10) + 'px';
+                    }
+                });
+                
+                point.addEventListener('mouseout', function() {
+                    tooltip.style.opacity = '0';
+                });
+            });
+        }
+        
+        // 添加数据行
+        function addFormRow() {
+            const formRows = document.getElementById('form-rows');
+            const newIndex = formRows.children.length;
+            
+            const newRow = document.createElement('div');
+            newRow.className = 'form-row';
+            
+            newRow.innerHTML = `
+                <div>
+                    <label class="form-label">时间轴节点</label>
+                    <input type="number" name="node[]" class="form-input timeline-node" min="0" value="${newIndex * 10}">
+                </div>
+                <div>
+                    <label class="form-label">事件</label>
+                    <input type="text" name="event[]" class="form-input event" placeholder="游戏事件">
+                </div>
+                <div>
+                    <label class="form-label">情绪强度</label>
+                    <input type="number" name="intensity[]" class="form-input intensity" min="1" max="10" value="5">
+                </div>
+                <div>
+                    <label class="form-label">选择Emoji</label>
+                    <div class="emoji-selector">
+                        <div class="emoji-option selected" data-emoji="😊">😊</div>
+                        <div class="emoji-option" data-emoji="😮">😮</div>
+                        <div class="emoji-option" data-emoji="😢">😢</div>
+                        <div class="emoji-option" data-emoji="😠">😠</div>
+                        <div class="emoji-option" data-emoji="😨">😨</div>
+                    </div>
+                    <input type="hidden" name="emoji[]" class="emoji-input" value="😊">
+                </div>
+            `;
+            
+            formRows.appendChild(newRow);
+            
+            // 重新初始化emoji选择器
+            initEmojiSelectors();
+        }
+    </script>
+</body>
+</html>
