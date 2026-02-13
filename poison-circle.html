@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>毒圈计算工具 - NikoJiang GameDesignToolKit</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #2d3436;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 50px 20px;
+            background: linear-gradient(135deg, #2d3436 0%, #000000 100%);
+            color: #fff;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #636e72;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: #2d3436;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            border: 1px solid #edf2f7;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: #2d3436;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.95rem;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background-color: #f8fafc;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #2d3436;
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(45, 52, 70, 0.1);
+        }
+
+        .stage-header {
+            display: grid;
+            grid-template-columns: 60px 1fr 1fr 1fr 50px;
+            gap: 15px;
+            padding: 0 15px 10px;
+            font-weight: 600;
+            color: #718096;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stage-list {
+            margin-top: 10px;
+        }
+
+        .stage-item {
+            display: grid;
+            grid-template-columns: 60px 1fr 1fr 1fr 50px;
+            gap: 15px;
+            padding: 20px 15px;
+            background-color: #fff;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            align-items: center;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stage-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .stage-num {
+            font-weight: 800;
+            color: #cbd5e0;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .stage-item .form-group {
+            margin-bottom: 0;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #2d3436;
+            color: #fff;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background-color: #000;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-add {
+            background-color: #edf2f7;
+            color: #4a5568;
+            margin-top: 10px;
+        }
+
+        .btn-add:hover {
+            background-color: #e2e8f0;
+            color: #2d3436;
+        }
+
+        .btn-remove {
+            background-color: #fff;
+            color: #fc8181;
+            padding: 8px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid #fed7d7;
+        }
+
+        .btn-remove:hover {
+            background-color: #fff5f5;
+            color: #e53e3e;
+            border-color: #feb2b2;
+        }
+
+        .chart-section {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chart-container {
+            position: relative;
+            height: 550px;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #a0aec0;
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 40px;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-box {
+            padding: 20px;
+            background-color: #f8fafc;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #edf2f7;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #2d3436;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #edf2f7;
+        }
+
+        @media (max-width: 768px) {
+            .stage-header {
+                display: none;
+            }
+            .stage-item {
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+            }
+            .stage-num {
+                grid-column: span 2;
+                text-align: left;
+                font-size: 1rem;
+                color: #2d3436;
+            }
+            .btn-remove {
+                grid-column: span 2;
+                width: 100%;
+                border-radius: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← 返回工具集</a>
+        <header>
+            <h1>毒圈计算工具</h1>
+            <p>精确模拟毒圈收缩节奏，优化游戏数值体验</p>
+        </header>
+
+        <div class="card">
+            <div class="card-title">⚙️ 基础配置</div>
+            <div class="form-group" style="max-width: 300px;">
+                <label for="mapSize">地图尺寸 (米)</label>
+                <input type="number" id="mapSize" value="4000" placeholder="例如: 4000">
+            </div>
+
+            <div class="card-title">📅 阶段设置</div>
+            <div class="stage-header">
+                <div>序号</div>
+                <div>目标半径 (m)</div>
+                <div>等待时间 (s)</div>
+                <div>收缩时长 (s)</div>
+                <div></div>
+            </div>
+            <div id="stages" class="stage-list">
+                <!-- Stages added here -->
+            </div>
+            
+            <button class="btn btn-add" onclick="addStage()">+ 添加收缩阶段</button>
+
+            <div class="actions">
+                <p style="color: #718096; font-size: 0.9rem;">* 第1阶段半径通常建议为地图尺寸的一半</p>
+                <button class="btn" onclick="generateChart()">🚀 生成分析报告</button>
+            </div>
+        </div>
+
+        <div class="chart-section" id="chartCard">
+            <div class="card">
+                <div class="card-title">📈 面积与节奏分析</div>
+                <div class="chart-container">
+                    <canvas id="areaChart"></canvas>
+                </div>
+                <div id="stats" class="summary-stats"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            &copy; 2026 NikoJiang GameDesignToolKit | 专注游戏数值设计
+        </div>
+    </div>
+
+    <script>
+        let stageCount = 0;
+        let chart = null;
+        Chart.register(ChartDataLabels);
+
+        function addStage(radius = '', waitTime = '', shrinkTime = '') {
+            stageCount++;
+            const stagesDiv = document.getElementById('stages');
+            const stageItem = document.createElement('div');
+            stageItem.className = 'stage-item';
+            stageItem.id = `stage-${stageCount}`;
+            
+            if (stageCount === 1 && radius === '') {
+                radius = 1000;
+                waitTime = 120;
+                shrinkTime = 60;
+            }
+
+            stageItem.innerHTML = `
+                <div class="stage-num">${stageCount}</div>
+                <div class="form-group">
+                    <input type="number" class="radius" value="${radius}" placeholder="半径">
+                </div>
+                <div class="form-group">
+                    <input type="number" class="waitTime" value="${waitTime}" placeholder="秒">
+                </div>
+                <div class="form-group">
+                    <input type="number" class="shrinkTime" value="${shrinkTime}" placeholder="秒">
+                </div>
+                <button class="btn btn-remove" onclick="removeStage(${stageCount})" title="删除阶段">×</button>
+            `;
+            stagesDiv.appendChild(stageItem);
+            updateStageNumbers();
+        }
+
+        function removeStage(id) {
+            const item = document.getElementById(`stage-${id}`);
+            if (item) item.remove();
+            updateStageNumbers();
+        }
+
+        function updateStageNumbers() {
+            const nums = document.querySelectorAll('.stage-num');
+            nums.forEach((num, index) => {
+                num.textContent = index + 1;
+            });
+        }
+
+        function generateChart() {
+            const mapSize = parseFloat(document.getElementById('mapSize').value);
+            const radiusInputs = document.querySelectorAll('.radius');
+            const waitInputs = document.querySelectorAll('.waitTime');
+            const shrinkInputs = document.querySelectorAll('.shrinkTime');
+
+            if (!mapSize || radiusInputs.length === 0) {
+                alert('请填写地图尺寸并至少添加一个阶段');
+                return;
+            }
+
+            const stages = [];
+            for (let i = 0; i < radiusInputs.length; i++) {
+                stages.push({
+                    radius: parseFloat(radiusInputs[i].value) || 0,
+                    wait: parseFloat(waitInputs[i].value) || 0,
+                    shrink: parseFloat(shrinkInputs[i].value) || 1
+                });
+            }
+
+            const chartData = [];
+            let currentTime = 0;
+            const initialArea = Math.pow(mapSize, 2);
+            let currentArea = initialArea;
+            
+            // 初始半径：使用地图对角线半径（外接圆半径），确保第一圈收缩有速度
+            let currentRadius = (Math.sqrt(2) * mapSize) / 2;
+
+            const speeds = [null];
+            const pointLabels = ['游戏开始'];
+            chartData.push({x: 0, y: currentArea});
+
+            stages.forEach((stage, index) => {
+                // Wait phase
+                currentTime += stage.wait;
+                chartData.push({x: currentTime, y: currentArea});
+                speeds.push(0);
+                pointLabels.push(`第 ${index + 1} 阶段等待结束`);
+
+                // Shrink phase
+                const targetArea = Math.PI * Math.pow(stage.radius, 2);
+                const prevRadius = currentRadius;
+                const shrinkSpeed = (prevRadius - stage.radius) / stage.shrink;
+                
+                currentTime += stage.shrink;
+                currentArea = targetArea;
+                currentRadius = stage.radius;
+                
+                chartData.push({x: currentTime, y: currentArea});
+                speeds.push(shrinkSpeed);
+                pointLabels.push(`第 ${index + 1} 阶段收缩完成`);
+            });
+
+            document.getElementById('chartCard').style.display = 'block';
+
+            const ctx = document.getElementById('areaChart').getContext('2d');
+            if (chart) chart.destroy();
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: '剩余面积 (m²)',
+                        data: chartData,
+                        borderColor: '#2d3436',
+                        backgroundColor: 'rgba(45, 52, 54, 0.05)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0,
+                        pointRadius: 6,
+                        pointBackgroundColor: '#2d3436',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        datalabels: {
+                            align: 'top',
+                            offset: 8,
+                            formatter: (value, context) => {
+                                const speed = speeds[context.dataIndex];
+                                if (speed !== null && speed > 0) return `${speed.toFixed(2)}m/s`;
+                                return '';
+                            },
+                            display: (context) => {
+                                const speed = speeds[context.dataIndex];
+                                return speed !== null && speed > 0;
+                            },
+                            font: { weight: 'bold', size: 12 },
+                            color: '#e53e3e',
+                            backgroundColor: 'rgba(255,255,255,0.9)',
+                            borderColor: '#e53e3e',
+                            borderWidth: 1,
+                            borderRadius: 4,
+                            padding: 4
+                        }
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    layout: { padding: { top: 30, right: 20 } },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(45, 52, 54, 0.9)',
+                            padding: 12,
+                            titleFont: { size: 14 },
+                            callbacks: {
+                                title: (items) => pointLabels[items[0].dataIndex],
+                                label: (context) => {
+                                    const area = context.parsed.y.toLocaleString();
+                                    const speed = speeds[context.dataIndex];
+                                    let lines = [`面积: ${area} m²`];
+                                    if (speed > 0) lines.push(`收缩速度: ${speed.toFixed(2)} m/s`);
+                                    lines.push(`时间: ${(context.parsed.x / 60).toFixed(1)} 分钟 (${context.parsed.x}秒)`);
+                                    return lines;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9' },
+                            title: { display: true, text: '地图剩余面积 (平方米)', font: { weight: 'bold' } }
+                        },
+                        x: {
+                            type: 'linear',
+                            min: 0,
+                            grid: { color: '#f1f5f9' },
+                            title: { display: true, text: '比赛时间 (刻度为分钟，点位为秒)', font: { weight: 'bold' } },
+                            ticks: {
+                                stepSize: 180, // 3 minutes in seconds
+                                font: { weight: 'bold' },
+                                callback: function(value) {
+                                    if (value % 60 === 0) {
+                                        return (value / 60) + 'm';
+                                    }
+                                    return '';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const statsDiv = document.getElementById('stats');
+            const totalTime = currentTime;
+            const finalArea = chartData[chartData.length - 1].y;
+            const areaPercent = ((finalArea / chartData[0].y) * 100).toFixed(2);
+            const maxSpeed = Math.max(...speeds.filter(s => s !== null));
+
+            statsDiv.innerHTML = `
+                <div class="stat-box">
+                    <span class="stat-value">${totalTime}s</span>
+                    <span class="stat-label">总时长</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-value">${finalArea.toLocaleString()}</span>
+                    <span class="stat-label">最终面积 (m²)</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-value">${areaPercent}%</span>
+                    <span class="stat-label">剩余比例</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-value">${maxSpeed.toFixed(2)}</span>
+                    <span class="stat-label">峰值速度 (m/s)</span>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                document.getElementById('chartCard').scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+
+        addStage();
+    </script>
+</body>
+</html>
