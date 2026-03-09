@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprite Cutter</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            border-bottom: 3px solid #007bff;
+        }
+        
+        h1 {
+            color: #007bff;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #888;
+            font-size: 1.1rem;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .control-panel {
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 3px solid #007bff;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-weight: bold;
+        }
+        
+        .control-group input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #2d2d2d;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #ccc;
+        }
+        
+        .control-group input[type="number"],
+        .control-group input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #2d2d2d;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #ccc;
+            font-size: 16px;
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        
+        .btn-secondary {
+            background-color: #444;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #555;
+        }
+        
+        .preview-panel {
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 8px;
+            border-right: 3px solid #007bff;
+        }
+        
+        .preview-container {
+            position: relative;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .canvas-container {
+            display: inline-block;
+            border: 2px solid #333;
+            background-color: #000;
+        }
+        
+        #spriteCanvas {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .animation-controls {
+            margin-top: 20px;
+        }
+        
+        .slider {
+            width: 100%;
+            margin: 10px 0;
+        }
+        
+        .frame-info {
+            text-align: center;
+            color: #ccc;
+            margin-top: 10px;
+        }
+        
+        .export-options {
+            margin-top: 20px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sprite Cutter</h1>
+            <p class="subtitle">图片序列帧切分与动画预览工具</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="control-panel">
+                <div class="control-group">
+                    <label for="imageInput">选择图片</label>
+                    <input type="file" id="imageInput" accept="image/*">
+                </div>
+                
+                <div class="control-group">
+                    <label for="rowsInput">行数</label>
+                    <input type="number" id="rowsInput" min="1" value="2">
+                </div>
+                
+                <div class="control-group">
+                    <label for="colsInput">列数</label>
+                    <input type="number" id="colsInput" min="1" value="2">
+                </div>
+                
+                <div class="control-group">
+                    <label for="exportNameInput">导出命名前缀</label>
+                    <input type="text" id="exportNameInput" placeholder="输入命名前缀">
+                </div>
+                
+                <button class="btn" id="cutButton">切分图片</button>
+                
+                <div class="animation-controls">
+                    <button class="btn" id="playButton">播放动画</button>
+                    <button class="btn btn-secondary" id="stopButton">停止</button>
+                    <label for="fpsSlider">帧率: <span id="fpsValue">10</span> FPS</label>
+                    <input type="range" id="fpsSlider" class="slider" min="1" max="30" value="10">
+                </div>
+                
+                <div class="export-options">
+                    <button class="btn" id="exportAllButton">导出所有帧</button>
+                    <button class="btn btn-secondary" id="exportCurrentButton">导出当前帧</button>
+                </div>
+            </div>
+            
+            <div class="preview-panel">
+                <div class="preview-container">
+                    <div class="canvas-container">
+                        <canvas id="spriteCanvas"></canvas>
+                    </div>
+                    <div class="frame-info">
+                        <p>当前帧: <span id="currentFrame">0</span> / <span id="totalFrames">0</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2026 Sprite Cutter - 静态网页工具</p>
+        </footer>
+    </div>
+    
+    <script>
+        // 全局变量
+        let originalImage = null;
+        let spriteFrames = [];
+        let currentFrame = 0;
+        let animationId = null;
+        let fps = 10;
+        let rows = 2;
+        let cols = 2;
+        
+        // DOM元素
+        const imageInput = document.getElementById('imageInput');
+        const rowsInput = document.getElementById('rowsInput');
+        const colsInput = document.getElementById('colsInput');
+        const exportNameInput = document.getElementById('exportNameInput');
+        const cutButton = document.getElementById('cutButton');
+        const playButton = document.getElementById('playButton');
+        const stopButton = document.getElementById('stopButton');
+        const fpsSlider = document.getElementById('fpsSlider');
+        const fpsValue = document.getElementById('fpsValue');
+        const exportAllButton = document.getElementById('exportAllButton');
+        const exportCurrentButton = document.getElementById('exportCurrentButton');
+        const spriteCanvas = document.getElementById('spriteCanvas');
+        const ctx = spriteCanvas.getContext('2d');
+        const currentFrameElement = document.getElementById('currentFrame');
+        const totalFramesElement = document.getElementById('totalFrames');
+        
+        // 事件监听器
+        imageInput.addEventListener('change', handleImageUpload);
+        rowsInput.addEventListener('change', updateRows);
+        colsInput.addEventListener('change', updateCols);
+        cutButton.addEventListener('click', cutSprite);
+        playButton.addEventListener('click', playAnimation);
+        stopButton.addEventListener('click', stopAnimation);
+        fpsSlider.addEventListener('input', updateFPS);
+        exportAllButton.addEventListener('click', exportAllFrames);
+        exportCurrentButton.addEventListener('click', exportCurrentFrame);
+        
+        // 处理图片上传
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            // 重置状态
+            spriteFrames = [];
+            currentFrame = 0;
+            updateFrameDisplay();
+            totalFramesElement.textContent = 0;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    originalImage = img;
+                    spriteCanvas.width = img.width;
+                    spriteCanvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    drawGrid();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // 更新行数
+        function updateRows(e) {
+            rows = parseInt(e.target.value);
+            drawGrid();
+        }
+        
+        // 更新列数
+        function updateCols(e) {
+            cols = parseInt(e.target.value);
+            drawGrid();
+        }
+        
+        // 绘制网格
+        function drawGrid() {
+            if (!originalImage) return;
+            
+            spriteCanvas.width = originalImage.width;
+            spriteCanvas.height = originalImage.height;
+            ctx.drawImage(originalImage, 0, 0);
+            
+            const frameWidth = originalImage.width / cols;
+            const frameHeight = originalImage.height / rows;
+            
+            // 绘制网格线
+            ctx.strokeStyle = '#00ffff';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            
+            // 绘制垂直线
+            for (let i = 1; i < cols; i++) {
+                const x = i * frameWidth;
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, originalImage.height);
+                ctx.stroke();
+            }
+            
+            // 绘制水平线
+            for (let i = 1; i < rows; i++) {
+                const y = i * frameHeight;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(originalImage.width, y);
+                ctx.stroke();
+            }
+            
+            // 恢复实线样式
+            ctx.setLineDash([]);
+        }
+        
+        // 更新帧率
+        function updateFPS(e) {
+            fps = parseInt(e.target.value);
+            fpsValue.textContent = fps;
+        }
+        
+        // 切分精灵图
+        function cutSprite() {
+            if (!originalImage) {
+                alert('请先选择一张图片');
+                return;
+            }
+            
+            spriteFrames = [];
+            const frameWidth = originalImage.width / cols;
+            const frameHeight = originalImage.height / rows;
+            
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const frameCanvas = document.createElement('canvas');
+                    frameCanvas.width = frameWidth;
+                    frameCanvas.height = frameHeight;
+                    const frameCtx = frameCanvas.getContext('2d');
+                    
+                    frameCtx.drawImage(
+                        originalImage,
+                        col * frameWidth,
+                        row * frameHeight,
+                        frameWidth,
+                        frameHeight,
+                        0,
+                        0,
+                        frameWidth,
+                        frameHeight
+                    );
+                    
+                    spriteFrames.push(frameCanvas);
+                }
+            }
+            
+            currentFrame = 0;
+            updateFrameDisplay();
+            totalFramesElement.textContent = spriteFrames.length;
+            
+            // 显示第一帧
+            if (spriteFrames.length > 0) {
+                spriteCanvas.width = spriteFrames[0].width;
+                spriteCanvas.height = spriteFrames[0].height;
+                ctx.drawImage(spriteFrames[0], 0, 0);
+            }
+        }
+        
+        // 更新帧显示
+        function updateFrameDisplay() {
+            currentFrameElement.textContent = currentFrame + 1;
+            if (spriteFrames.length > 0) {
+                ctx.clearRect(0, 0, spriteCanvas.width, spriteCanvas.height);
+                ctx.drawImage(spriteFrames[currentFrame], 0, 0);
+            }
+        }
+        
+        // 播放动画
+        function playAnimation() {
+            if (spriteFrames.length === 0) {
+                alert('请先切分图片');
+                return;
+            }
+            
+            stopAnimation();
+            
+            let lastTime = 0;
+            const frameInterval = 1000 / fps;
+            
+            function animate(timestamp) {
+                if (!lastTime) lastTime = timestamp;
+                const elapsed = timestamp - lastTime;
+                
+                if (elapsed >= frameInterval) {
+                    currentFrame = (currentFrame + 1) % spriteFrames.length;
+                    updateFrameDisplay();
+                    lastTime = timestamp;
+                }
+                
+                animationId = requestAnimationFrame(animate);
+            }
+            
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // 停止动画
+        function stopAnimation() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+        }
+        
+        // 导出当前帧
+        function exportCurrentFrame() {
+            if (spriteFrames.length === 0) {
+                alert('请先切分图片');
+                return;
+            }
+            
+            const frame = spriteFrames[currentFrame];
+            const link = document.createElement('a');
+            const prefix = exportNameInput.value.trim() || 'frame';
+            link.download = `${prefix}_${currentFrame + 1}.png`;
+            link.href = frame.toDataURL('image/png');
+            link.click();
+            
+            // 重置状态
+            resetState();
+        }
+        
+        // 导出所有帧
+        function exportAllFrames() {
+            if (spriteFrames.length === 0) {
+                alert('请先切分图片');
+                return;
+            }
+            
+            const prefix = exportNameInput.value.trim() || 'frame';
+            
+            // 当帧数超过2帧时，以压缩包形式导出
+            if (spriteFrames.length > 2) {
+                const zip = new JSZip();
+                const folder = zip.folder(`${prefix}_frames`);
+                
+                spriteFrames.forEach((frame, index) => {
+                    const dataURL = frame.toDataURL('image/png');
+                    const base64 = dataURL.split(',')[1];
+                    folder.file(`${prefix}_${index + 1}.png`, base64, {base64: true});
+                });
+                
+                zip.generateAsync({type: 'blob'}).then(function(content) {
+                    const link = document.createElement('a');
+                    link.download = `${prefix}_frames.zip`;
+                    link.href = URL.createObjectURL(content);
+                    link.click();
+                    
+                    // 重置状态
+                    resetState();
+                });
+            } else {
+                // 帧数小于等于2帧时，直接导出
+                spriteFrames.forEach((frame, index) => {
+                    const link = document.createElement('a');
+                    link.download = `${prefix}_${index + 1}.png`;
+                    link.href = frame.toDataURL('image/png');
+                    link.click();
+                });
+                
+                // 重置状态
+                resetState();
+            }
+        }
+        
+        // 重置状态
+        function resetState() {
+            // 停止动画
+            stopAnimation();
+            
+            // 清空帧数据
+            spriteFrames = [];
+            currentFrame = 0;
+            
+            // 更新显示
+            updateFrameDisplay();
+            totalFramesElement.textContent = 0;
+            
+            // 重新显示原始图片和网格
+            if (originalImage) {
+                spriteCanvas.width = originalImage.width;
+                spriteCanvas.height = originalImage.height;
+                ctx.drawImage(originalImage, 0, 0);
+                drawGrid();
+            }
+        }
+    </script>
+</body>
+</html>
