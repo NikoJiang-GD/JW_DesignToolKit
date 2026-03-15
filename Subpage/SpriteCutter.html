@@ -5,46 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sprite Cutter</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link rel="stylesheet" href="../GlobalStyle.CSS">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: #ffffff;
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: #1e1e1e;
-            border-radius: 8px;
-            border-bottom: 3px solid #007bff;
-        }
-        
-        h1 {
-            color: #007bff;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        
-        .subtitle {
-            color: #888;
-            font-size: 1.1rem;
-        }
-        
+        /* Sprite Cutter Specific Styles */
         .main-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -53,10 +16,10 @@
         }
         
         .control-panel {
-            background-color: #1e1e1e;
+            background-color: #1A1A1A;
             padding: 20px;
             border-radius: 8px;
-            border-left: 3px solid #007bff;
+            border-left: 3px solid #76B900;
         }
         
         .control-group {
@@ -66,27 +29,27 @@
         .control-group label {
             display: block;
             margin-bottom: 8px;
-            color: #ccc;
+            color: #B3B3B3;
             font-weight: bold;
         }
         
         .control-group input[type="file"] {
             width: 100%;
             padding: 10px;
-            background-color: #2d2d2d;
-            border: 1px solid #444;
+            background-color: #222222;
+            border: 1px solid #333333;
             border-radius: 4px;
-            color: #ccc;
+            color: #B3B3B3;
         }
         
         .control-group input[type="number"],
         .control-group input[type="text"] {
             width: 100%;
             padding: 10px;
-            background-color: #2d2d2d;
-            border: 1px solid #444;
+            background-color: #222222;
+            border: 1px solid #333333;
             border-radius: 4px;
-            color: #ccc;
+            color: #FFFFFF;
             font-size: 16px;
         }
         
@@ -95,33 +58,35 @@
             width: 100%;
             padding: 12px;
             margin-bottom: 10px;
-            background-color: #007bff;
+            background-color: #76B900;
             color: white;
             border: none;
             border-radius: 4px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
         }
         
         .btn:hover {
-            background-color: #0056b3;
+            background-color: #76B900;
+            filter: brightness(1.1);
+            transform: scale(1.02);
         }
         
         .btn-secondary {
-            background-color: #444;
+            background-color: #333333;
         }
         
         .btn-secondary:hover {
-            background-color: #555;
+            background-color: #444444;
         }
         
         .preview-panel {
-            background-color: #1e1e1e;
+            background-color: #1A1A1A;
             padding: 20px;
             border-radius: 8px;
-            border-right: 3px solid #007bff;
+            border-right: 3px solid #76B900;
         }
         
         .preview-container {
@@ -132,8 +97,8 @@
         
         .canvas-container {
             display: inline-block;
-            border: 2px solid #333;
-            background-color: #000;
+            border: 2px solid #333333;
+            background-color: #000000;
         }
         
         #spriteCanvas {
@@ -152,21 +117,12 @@
         
         .frame-info {
             text-align: center;
-            color: #ccc;
+            color: #B3B3B3;
             margin-top: 10px;
         }
         
         .export-options {
             margin-top: 20px;
-        }
-        
-        footer {
-            text-align: center;
-            padding: 20px;
-            background-color: #1e1e1e;
-            border-radius: 8px;
-            color: #888;
-            font-size: 0.9rem;
         }
         
         @media (max-width: 768px) {
@@ -180,7 +136,7 @@
     <div class="container">
         <header>
             <h1>Sprite Cutter</h1>
-            <p class="subtitle">图片序列帧切分与动画预览工具</p>
+            <p>图片序列帧切分与动画预览工具</p>
         </header>
         
         <div class="main-content">

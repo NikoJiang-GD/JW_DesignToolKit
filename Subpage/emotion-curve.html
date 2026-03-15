@@ -4,57 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>情绪曲线工具 - 游戏设计工具合集</title>
+    <link rel="stylesheet" href="../GlobalStyle.CSS">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            background-color: #333;
-            color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        
+        /* Emotion Curve Specific Styles */
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         
-        .header-content h1 {
-            font-size: 1.8rem;
-            font-weight: 600;
-        }
-        
         .back-link {
-            color: #fff;
+            color: #FFFFFF;
             text-decoration: none;
             display: flex;
             align-items: center;
             font-weight: 500;
-            transition: opacity 0.3s ease;
+            transition: all 0.3s ease;
         }
         
         .back-link:hover {
-            opacity: 0.8;
+            color: #76B900;
         }
         
         .back-link svg {
@@ -68,26 +37,19 @@
             margin-bottom: 40px;
         }
         
-        .chart-section {
-            flex: 1;
-            min-height: 600px;
-            order: 1;
-        }
-        
         .input-section {
-            order: 2;
-            background-color: #fff;
+            background-color: #1A1A1A;
             border-radius: 8px;
             padding: 30px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            border: 1px solid #e0e0e0;
+            border: 1px solid #333333;
         }
         
         .input-section h2 {
             font-size: 1.3rem;
             margin-bottom: 20px;
             font-weight: 600;
-            color: #333;
+            color: #FFFFFF;
         }
         
         .form-group {
@@ -101,50 +63,54 @@
             align-items: end;
             margin-bottom: 20px;
             padding: 20px;
-            background-color: #f9f9f9;
+            background-color: #222222;
             border-radius: 6px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid #333333;
         }
         
         .form-row:hover {
-            background-color: #f5f5f5;
+            background-color: #252525;
+            border-color: #76B900;
         }
         
         .form-label {
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
-            color: #555;
+            color: #B3B3B3;
             font-size: 0.9rem;
         }
         
         .form-input {
             width: 100%;
             padding: 10px;
-            border: 1px solid #ddd;
+            border: 1px solid #333333;
             border-radius: 4px;
             font-size: 1rem;
             transition: border-color 0.3s ease;
+            background-color: #222222;
+            color: #FFFFFF;
         }
         
         .form-input:focus {
             outline: none;
-            border-color: #333;
+            border-color: #76B900;
         }
         
         .form-select {
             width: 100%;
             padding: 10px;
-            border: 1px solid #ddd;
+            border: 1px solid #333333;
             border-radius: 4px;
             font-size: 1rem;
-            background-color: #fff;
+            background-color: #222222;
+            color: #FFFFFF;
             transition: border-color 0.3s ease;
         }
         
         .form-select:focus {
             outline: none;
-            border-color: #333;
+            border-color: #76B900;
         }
         
         .emoji-selector {
@@ -156,23 +122,24 @@
         
         .emoji-option {
             padding: 10px;
-            border: 1px solid #ddd;
+            border: 1px solid #333333;
             border-radius: 4px;
             text-align: center;
             font-size: 1.2rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            background-color: #fff;
+            background-color: #222222;
+            color: #FFFFFF;
         }
         
         .emoji-option:hover {
-            border-color: #333;
-            background-color: #f0f0f0;
+            border-color: #76B900;
+            background-color: #252525;
         }
         
         .emoji-option.selected {
-            border-color: #333;
-            background-color: #e0e0e0;
+            border-color: #76B900;
+            background-color: rgba(118, 185, 0, 0.1);
         }
         
         .btn {
@@ -186,30 +153,32 @@
         }
         
         .btn-primary {
-            background-color: #333;
-            color: #fff;
+            background-color: #76B900;
+            color: #FFFFFF;
         }
         
         .btn-primary:hover {
-            background-color: #555;
+            background-color: #76B900;
+            filter: brightness(1.1);
+            transform: scale(1.02);
         }
         
         .btn-secondary {
-            background-color: #999;
-            color: #fff;
+            background-color: #333333;
+            color: #FFFFFF;
         }
         
         .btn-secondary:hover {
-            background-color: #777;
+            background-color: #444444;
         }
         
         .btn-danger {
-            background-color: #666;
-            color: #fff;
+            background-color: #666666;
+            color: #FFFFFF;
         }
         
         .btn-danger:hover {
-            background-color: #444;
+            background-color: #444444;
         }
         
         .btn-group {
@@ -225,26 +194,26 @@
         }
         
         .chart-section {
-            background-color: #fff;
+            background-color: #1A1A1A;
             border-radius: 8px;
             padding: 30px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            border: 1px solid #e0e0e0;
+            border: 1px solid #333333;
         }
         
         .chart-section h2 {
             font-size: 1.3rem;
             margin-bottom: 20px;
             font-weight: 600;
-            color: #333;
+            color: #FFFFFF;
         }
         
         .chart-container {
             position: relative;
             height: 500px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid #333333;
             border-radius: 6px;
-            background-color: #f9f9f9;
+            background-color: #222222;
             overflow: hidden;
         }
         
@@ -259,10 +228,10 @@
         
         .data-item {
             padding: 15px;
-            background-color: #f9f9f9;
+            background-color: #222222;
             border-radius: 6px;
             margin-bottom: 10px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid #333333;
         }
         
         .data-item-content {
@@ -289,26 +258,13 @@
             font-size: 1rem;
             margin-bottom: 5px;
             font-weight: 600;
+            color: #FFFFFF;
         }
         
         .data-item-details p {
             font-size: 0.9rem;
-            color: #666;
+            color: #B3B3B3;
             margin: 0;
-        }
-        
-        footer {
-            text-align: center;
-            padding: 20px;
-            background-color: #333;
-            color: #fff;
-            border-radius: 8px;
-            margin-top: 40px;
-        }
-        
-        footer p {
-            opacity: 0.8;
-            font-size: 0.9rem;
         }
         
         @media (max-width: 1024px) {
@@ -322,10 +278,6 @@
         }
         
         @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            
             .header-content h1 {
                 font-size: 1.5rem;
             }
@@ -354,7 +306,7 @@
     <div class="container">
         <header>
             <div class="header-content">
-                <a href="index.html" class="back-link">
+                <a href="../index.html" class="back-link">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M20 11H7.83L13.42 5.41L12 4L4 12L12 20L13.41 18.59L7.83 13H20V11Z" fill="currentColor"/>
                     </svg>
@@ -591,12 +543,12 @@
                         datasets: [{
                             label: '情绪强度',
                             data: [],
-                            borderColor: '#333',
-                            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                            borderColor: '#76B900',
+                            backgroundColor: 'rgba(118, 185, 0, 0.1)',
                             borderWidth: 2,
                             tension: 0.4,
-                            pointBackgroundColor: '#333',
-                            pointBorderColor: '#fff',
+                            pointBackgroundColor: '#76B900',
+                            pointBorderColor: '#111111',
                             pointBorderWidth: 2,
                             pointRadius: 6
                         }]

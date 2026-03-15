@@ -4,148 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>游戏设计工具合集</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            text-align: center;
-            padding: 60px 20px;
-            background-color: #333;
-            color: #fff;
-            margin-bottom: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        
-        header h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-        
-        header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-        
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-bottom: 60px;
-        }
-        
-        .tool-card {
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
-            text-decoration: none;
-            color: #333;
-            border: 1px solid #e0e0e0;
-        }
-        
-        .tool-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-            border-color: #333;
-        }
-        
-        .tool-icon {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            display: block;
-            text-align: center;
-        }
-        
-        .tool-card h2 {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            text-align: center;
-            font-weight: 600;
-        }
-        
-        .tool-card p {
-            color: #666;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .btn {
-            display: inline-block;
-            background-color: #333;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 4px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: background-color 0.3s ease;
-            margin-top: 10px;
-        }
-        
-        .btn:hover {
-            background-color: #555;
-        }
-        
-        .btn-container {
-            text-align: center;
-        }
-        
-        footer {
-            text-align: center;
-            padding: 40px 20px;
-            background-color: #333;
-            color: #fff;
-            border-radius: 8px;
-            margin-top: 60px;
-        }
-        
-        footer p {
-            opacity: 0.8;
-        }
-        
-        @media (max-width: 768px) {
-            header {
-                padding: 40px 20px;
-            }
-            
-            header h1 {
-                font-size: 2.5rem;
-            }
-            
-            .tools-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="GlobalStyle.CSS">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>NikoJiang GameDesignToolKit</h1>
-            <p>专为游戏设计师打造的实用工具</p>
+            <canvas id="particle-canvas"></canvas>
+            <h1>GameDesignToolKit</h1>
+            <p>Design by NikoJ1ang</p>
         </header>
         
         <section class="tools-grid">
-            <a href="emotion-curve.html" class="tool-card">
+            <a href="Subpage/emotion-curve.html" class="tool-card">
                 <div class="tool-icon">📊</div>
                 <h2>情绪曲线工具</h2>
                 <p>通过时间轴节点、事件和情绪数据，绘制游戏情绪曲线，帮助你优化游戏体验</p>
@@ -154,7 +24,7 @@
                 </div>
             </a>
             
-            <a href="poison-circle.html" class="tool-card">
+            <a href="Subpage/poison-circle.html" class="tool-card">
                 <div class="tool-icon">⭕</div>
                 <h2>毒圈计算工具</h2>
                 <p>配置地图尺寸与多个毒圈阶段，实时计算面积变化与缩圈速度，可视化游戏节奏</p>
@@ -163,7 +33,7 @@
                 </div>
             </a>
             
-            <a href="pic-zip.html" class="tool-card">
+            <a href="Subpage/pic-zip.html" class="tool-card">
                 <div class="tool-icon">🖼️</div>
                 <h2>图片压缩工具</h2>
                 <p>导入图片，识别原有尺寸，压缩至填写的像素尺寸，支持保持宽高比和多种导出格式</p>
@@ -172,10 +42,19 @@
                 </div>
             </a>
             
-            <a href="SpriteCutter.html" class="tool-card">
+            <a href="Subpage/SpriteCutter.html" class="tool-card">
                 <div class="tool-icon">✂️</div>
                 <h2>精灵切割工具</h2>
                 <p>用于切割精灵图，将大图片分割成多个小图片，方便游戏开发中使用</p>
+                <div class="btn-container">
+                    <span class="btn">使用工具</span>
+                </div>
+            </a>
+            
+            <a href="Subpage/SoundFx.html" class="tool-card">
+                <div class="tool-icon">🔊</div>
+                <h2>音效生成工具</h2>
+                <p>生成独立游戏用的音效，支持多种波形类型和参数调整，包含预设音效</p>
                 <div class="btn-container">
                     <span class="btn">使用工具</span>
                 </div>
@@ -192,8 +71,126 @@
         </section>
         
         <footer>
+            <div class="donation-section">
+                <h3>支持开发者</h3>
+                <p>如果你觉得这些工具对你有帮助，欢迎打赏支持</p>
+                <div class="qr-codes">
+                    <div class="qr-item">
+                        <img src="Picture/pay_wx.png" alt="微信打赏">
+                        <span>微信</span>
+                    </div>
+                    <div class="qr-item">
+                        <img src="Picture/pay_zfb.png.jpg" alt="支付宝打赏">
+                        <span>支付宝</span>
+                    </div>
+                </div>
+            </div>
             <p>&copy; 2026 游戏设计工具合集 | 黑白灰主题</p>
         </footer>
     </div>
+    
+    <script>
+        // 粒子躲避效果
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            const header = document.querySelector('header');
+            
+            // 设置 canvas 尺寸
+            function resizeCanvas() {
+                const rect = header.getBoundingClientRect();
+                canvas.width = rect.width;
+                canvas.height = rect.height;
+            }
+            
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // 粒子数组
+            const particles = [];
+            const particleCount = 50; // 粒子数量
+            const avoidanceRadius = 80; // 躲避半径
+            const maxForce = 0.2; // 最大躲避力
+            
+            // 鼠标位置
+            let mouse = { x: 0, y: 0 };
+            
+            // 初始化粒子
+            function initParticles() {
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push({
+                        x: Math.random() * canvas.width,
+                        y: Math.random() * canvas.height,
+                        vx: (Math.random() - 0.5) * 0.5,
+                        vy: (Math.random() - 0.5) * 0.5,
+                        size: Math.random() * 3 + 1,
+                        opacity: Math.random() * 0.8 + 0.2
+                    });
+                }
+            }
+            
+            // 鼠标移动事件
+            header.addEventListener('mousemove', function(e) {
+                const rect = header.getBoundingClientRect();
+                mouse.x = e.clientX - rect.left;
+                mouse.y = e.clientY - rect.top;
+            });
+            
+            // 动画循环
+            function animateParticles() {
+                // 清空画布
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // 更新和绘制粒子
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    
+                    // 计算鼠标距离
+                    const dx = mouse.x - p.x;
+                    const dy = mouse.y - p.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // 躲避鼠标
+                    if (distance < avoidanceRadius) {
+                        const force = (avoidanceRadius - distance) / avoidanceRadius;
+                        const angle = Math.atan2(dy, dx);
+                        p.vx -= Math.cos(angle) * force * maxForce;
+                        p.vy -= Math.sin(angle) * force * maxForce;
+                    }
+                    
+                    // 边界检测
+                    if (p.x < 0 || p.x > canvas.width) {
+                        p.vx *= -1;
+                    }
+                    if (p.y < 0 || p.y > canvas.height) {
+                        p.vy *= -1;
+                    }
+                    
+                    // 速度限制
+                    const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+                    if (speed > 1) {
+                        p.vx = (p.vx / speed) * 1;
+                        p.vy = (p.vy / speed) * 1;
+                    }
+                    
+                    // 更新位置
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    
+                    // 绘制粒子
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(118, 185, 0, ${p.opacity})`;
+                    ctx.fill();
+                }
+                
+                requestAnimationFrame(animateParticles);
+            }
+            
+            // 初始化并开始动画
+            initParticles();
+            animateParticles();
+        });
+    </script>
 </body>
 </html>

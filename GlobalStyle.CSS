@@ -1,0 +1,471 @@
+/* Global Style for Nvdia Style Design */
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', 'Roboto', 'SF Pro', sans-serif;
+    background-color: #111111;
+    color: #FFFFFF;
+    line-height: 1.6;
+}
+
+/* Container Styles */
+.container {
+    max-width: 1920px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* Header Styles */
+header {
+    text-align: center;
+    padding: 60px 20px;
+    margin-bottom: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #000000, #1a1a1a, #76B900);
+}
+
+#particle-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(0,0,0,0.2), rgba(0,0,0,0.8));
+    z-index: -1;
+}
+
+header h1 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+header p {
+    font-size: 1.2rem;
+    opacity: 0.8;
+    color: #B3B3B3;
+}
+
+/* Tools Grid Styles */
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 60px;
+}
+
+.tool-card {
+    background-color: #1A1A1A;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: #FFFFFF;
+    border: 1px solid #333333;
+}
+
+.tool-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    border-color: #76B900;
+}
+
+.tool-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    display: block;
+    text-align: center;
+}
+
+.tool-card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    text-align: center;
+    font-weight: 600;
+    color: #FFFFFF;
+}
+
+.tool-card p {
+    color: #B3B3B3;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Button Styles */
+.btn {
+    display: inline-block;
+    background-color: #76B900;
+    color: #000000;
+    padding: 10px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn:hover {
+    background-color: #76B900;
+    filter: brightness(1.1);
+    transform: scale(1.02);
+}
+
+.btn:disabled {
+    background-color: #333333;
+    color: #999999;
+    cursor: not-allowed;
+    filter: none;
+    transform: none;
+}
+
+.btn-container {
+    text-align: center;
+}
+
+/* Footer Styles */
+footer {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #1A1A1A;
+    color: #FFFFFF;
+    border-radius: 8px;
+    margin-top: 60px;
+}
+
+.donation-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #333333;
+}
+
+.donation-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #FFFFFF;
+}
+
+.donation-section p {
+    margin-bottom: 20px;
+    color: #B3B3B3;
+}
+
+.qr-codes {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 20px;
+}
+
+.qr-item {
+    text-align: center;
+}
+
+.qr-item img {
+    width: 120px;
+    height: 120px;
+    border: 1px solid #333333;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.qr-item span {
+    display: block;
+    color: #B3B3B3;
+    font-size: 14px;
+}
+
+footer p {
+    opacity: 0.8;
+    color: #B3B3B3;
+    margin-top: 20px;
+}
+
+/* Form Elements */
+input[type="file"] {
+    display: block;
+    margin: 10px auto;
+    color: #B3B3B3;
+}
+
+input[type="number"],
+input[type="text"],
+select {
+    width: 100px;
+    padding: 8px;
+    border: 1px solid #333333;
+    border-radius: 4px;
+    background-color: #222222;
+    color: #FFFFFF;
+}
+
+input[type="checkbox"] {
+    width: auto;
+}
+
+/* Upload Section */
+.upload-section {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 30px;
+    border: 2px dashed #333333;
+    border-radius: 8px;
+    background-color: #1A1A1A;
+}
+
+.upload-section h2 {
+    margin-bottom: 20px;
+    color: #FFFFFF;
+}
+
+/* Preview Section */
+.preview-section {
+    margin-bottom: 30px;
+}
+
+.preview-section h2 {
+    margin-bottom: 20px;
+    color: #FFFFFF;
+}
+
+.preview-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.image-preview {
+    flex: 1;
+    min-width: 300px;
+    margin: 10px;
+    text-align: center;
+}
+
+.image-preview h3 {
+    margin-bottom: 15px;
+    color: #FFFFFF;
+}
+
+.image-preview img {
+    max-width: 100%;
+    max-height: 300px;
+    border: 1px solid #333333;
+    border-radius: 4px;
+}
+
+.image-info {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #B3B3B3;
+}
+
+/* Resize Section */
+.resize-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid #333333;
+    border-radius: 8px;
+    background-color: #1A1A1A;
+}
+
+.resize-section h2 {
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #FFFFFF;
+}
+
+.resize-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.option-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.option-group label {
+    font-size: 14px;
+    color: #B3B3B3;
+}
+
+/* Export Section */
+.export-section {
+    text-align: center;
+    padding: 20px;
+    border: 1px solid #333333;
+    border-radius: 8px;
+    background-color: #1A1A1A;
+}
+
+.export-section h2 {
+    margin-bottom: 20px;
+    color: #FFFFFF;
+}
+
+.export-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+/* Batch Preview */
+.batch-preview {
+    margin-top: 20px;
+    border-top: 1px solid #333333;
+    padding-top: 20px;
+}
+
+.batch-preview h3 {
+    margin-bottom: 15px;
+    text-align: center;
+    color: #FFFFFF;
+}
+
+.images-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.image-item {
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #333333;
+    border-radius: 4px;
+    background-color: #222222;
+}
+
+.image-item img {
+    max-width: 100%;
+    max-height: 150px;
+    margin-bottom: 10px;
+}
+
+.image-item .image-name {
+    font-size: 12px;
+    color: #B3B3B3;
+    margin-bottom: 5px;
+    word-break: break-all;
+}
+
+.image-item .image-size {
+    font-size: 11px;
+    color: #999999;
+}
+
+.batch-actions {
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Progress Bar */
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background-color: #222222;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 20px 0;
+    display: none;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: #76B900;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #B3B3B3;
+    display: none;
+}
+
+/* Error Message */
+.error-message {
+    color: #FF6B00;
+    margin-top: 10px;
+    text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    header {
+        padding: 40px 20px;
+    }
+    
+    header h1 {
+        font-size: 2.5rem;
+    }
+    
+    .tools-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .preview-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .image-preview {
+        width: 100%;
+        max-width: 400px;
+    }
+    
+    .resize-options {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .export-options {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 1024px) {
+    .container {
+        padding: 0 16px;
+    }
+    
+    header h1 {
+        font-size: 2.8rem;
+    }
+}
+
+@media (min-width: 1440px) {
+    .container {
+        max-width: 1440px;
+    }
+}

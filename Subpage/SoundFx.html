@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundFx - 独立游戏音效生成器</title>
+    <link rel="stylesheet" href="../GlobalStyle.CSS">
+    <style>
+        /* 返回按钮样式 */
+        .back-link {
+            display: inline-block;
+            color: #B3B3B3;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: #76B900;
+        }
+
+        .soundfx-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .tool-header {
+            margin-bottom: 30px;
+        }
+        .tool-header h1 {
+            margin-bottom: 5px;
+        }
+        .tool-header p {
+            margin-top: 0;
+            color: #B3B3B3;
+        }
+        .main-content {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .preset-section {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        .preset-section h3 {
+            color: #76b900;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .preset-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .preset-item {
+            background: #2a2a2a;
+            padding: 12px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .preset-item:hover {
+            background: #3a3a3a;
+            transform: translateY(-1px);
+        }
+        .preset-item.active {
+            background: #3a3a3a;
+            border-color: #76b900;
+        }
+        .preset-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .preset-info h4 {
+            color: #e0e0e0;
+            margin: 0;
+            font-size: 14px;
+        }
+        .preset-params {
+            display: flex;
+            gap: 12px;
+            font-size: 11px;
+            color: #888;
+        }
+        .preset-params span {
+            background: #333;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+        .preset-params span:first-child {
+            background: #76b900;
+            color: black;
+            font-weight: bold;
+        }
+        .visualizer {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        .visualizer h3 {
+            color: #76b900;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .visualizer canvas {
+            width: 100%;
+            height: 150px;
+            background: #000;
+            border-radius: 4px;
+        }
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .control-section {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        .control-section h3 {
+            color: #76b900;
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+        .control-group {
+            margin-bottom: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .control-group label {
+            flex: 1;
+            margin-bottom: 0;
+            color: #e0e0e0;
+            font-size: 13px;
+        }
+        .control-group input[type="range"] {
+            width: 100%;
+            margin-top: 4px;
+            margin-bottom: 4px;
+        }
+        .control-group input[type="number"] {
+            width: 70px;
+            padding: 6px;
+            background: #333;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #e0e0e0;
+        }
+        .control-group select {
+            width: 100%;
+            padding: 8px;
+            background: #333;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #e0e0e0;
+        }
+        .control-group small {
+            color: #888;
+            font-size: 11px;
+            margin-left: 10px;
+            white-space: nowrap;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: #76b900;
+            color: black;
+        }
+        .btn-primary:hover {
+            background: #89d100;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #333;
+            color: #e0e0e0;
+            border: 1px solid #444;
+        }
+        .btn-secondary:hover {
+            background: #444;
+            transform: translateY(-2px);
+        }
+        .export-section {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        .export-section h3 {
+            color: #76b900;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .export-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .export-options .control-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        .export-options select {
+            width: 100%;
+        }
+        @media (max-width: 992px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 768px) {
+            .export-options {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="soundfx-container">
+        <a href="../index.html" class="back-link">← 返回工具集</a>
+        <div class="tool-header">
+            <h1>SoundFx</h1>
+            <p>独立游戏音效生成器</p>
+        </div>
+
+        <div class="visualizer">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3>音效可视化</h3>
+                <div class="button-group" style="gap: 8px;">
+                    <button class="btn btn-primary" id="playButton" style="padding: 8px 16px; font-size: 12px;">播放</button>
+                    <button class="btn btn-secondary" id="stopButton" style="padding: 8px 16px; font-size: 12px;">停止</button>
+                </div>
+            </div>
+            <canvas id="visualizerCanvas"></canvas>
+        </div>
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="preset-section">
+                    <h3>预设音效</h3>
+                    <div class="preset-list">
+                        <div class="preset-item" data-preset="laser">
+                            <div class="preset-info">
+                                <h4>激光</h4>
+                                <div class="preset-params">
+                                    <span>正弦波</span>
+                                    <span>800Hz</span>
+                                    <span>0.2s</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preset-item" data-preset="explosion">
+                            <div class="preset-info">
+                                <h4>爆炸</h4>
+                                <div class="preset-params">
+                                    <span>白噪声</span>
+                                    <span>200Hz</span>
+                                    <span>1.5s</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preset-item" data-preset="jump">
+                            <div class="preset-info">
+                                <h4>跳跃</h4>
+                                <div class="preset-params">
+                                    <span>正弦波</span>
+                                    <span>600Hz</span>
+                                    <span>0.3s</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preset-item" data-preset="coin">
+                            <div class="preset-info">
+                                <h4>金币</h4>
+                                <div class="preset-params">
+                                    <span>正弦波</span>
+                                    <span>1200Hz</span>
+                                    <span>0.2s</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preset-item" data-preset="powerup">
+                            <div class="preset-info">
+                                <h4>升级</h4>
+                                <div class="preset-params">
+                                    <span>正弦波</span>
+                                    <span>800Hz</span>
+                                    <span>0.8s</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preset-item" data-preset="menu">
+                            <div class="preset-info">
+                                <h4>菜单</h4>
+                                <div class="preset-params">
+                                    <span>正弦波</span>
+                                    <span>440Hz</span>
+                                    <span>0.15s</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preset-item" data-preset="footstep">
+                            <div class="preset-info">
+                                <h4>脚步声</h4>
+                                <div class="preset-params">
+                                    <span>白噪声</span>
+                                    <span>300Hz</span>
+                                    <span>0.1s</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preset-item" data-preset="hit">
+                            <div class="preset-info">
+                                <h4>击中</h4>
+                                <div class="preset-params">
+                                    <span>方波</span>
+                                    <span>200Hz</span>
+                                    <span>0.2s</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preset-item" data-preset="heal">
+                            <div class="preset-info">
+                                <h4>治疗</h4>
+                                <div class="preset-params">
+                                    <span>正弦波</span>
+                                    <span>600Hz</span>
+                                    <span>1s</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preset-item" data-preset="error">
+                            <div class="preset-info">
+                                <h4>错误</h4>
+                                <div class="preset-params">
+                                    <span>锯齿波</span>
+                                    <span>200Hz</span>
+                                    <span>0.5s</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preset-item" data-preset="dice">
+                            <div class="preset-info">
+                                <h4>丢骰子</h4>
+                                <div class="preset-params">
+                                    <span>白噪声</span>
+                                    <span>500Hz</span>
+                                    <span>0.8s</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preset-item" data-preset="ak47">
+                            <div class="preset-info">
+                                <h4>AK枪声</h4>
+                                <div class="preset-params">
+                                    <span>白噪声</span>
+                                    <span>800Hz</span>
+                                    <span>0.3s</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="control-section">
+                    <h3>音效类型</h3>
+                    <div class="control-group">
+                        <label for="soundType">选择音效类型</label>
+                        <select id="soundType">
+                        <option value="sine">正弦波</option>
+                        <option value="square">方波</option>
+                        <option value="triangle">三角波</option>
+                        <option value="sawtooth">锯齿波</option>
+                        <option value="noise">白噪声</option>
+                        <option value="pinknoise">粉噪声</option>
+                    </select>
+                    </div>
+                    
+                    <h3>基本参数</h3>
+                    <div class="control-group">
+                        <label for="frequency">频率: <span id="frequencyValue">440</span> Hz (<span id="noteValue">A4</span>)</label>
+                        <input type="range" id="frequency" min="20" max="20000" value="440">
+                    </div>
+                    <div class="control-group">
+                        <label for="duration">持续时间: <span id="durationValue">1</span> 秒</label>
+                        <input type="range" id="duration" min="0.1" max="5" step="0.1" value="1">
+                    </div>
+                    <div class="control-group">
+                        <label for="volume">音量: <span id="volumeValue">0.5</span></label>
+                        <input type="range" id="volume" min="0" max="1" step="0.1" value="0.5">
+                    </div>
+                    <div class="control-group">
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="loop"> 循环播放
+                        </label>
+                    </div>
+                </div>
+                <div class="control-section">
+                    <h3>高级参数</h3>
+                    <div class="control-group">
+                        <label for="attack"> Attack: <span id="attackValue">0.01</span> 秒</label>
+                        <small>从静音到最大音量的时间</small>
+                        <input type="range" id="attack" min="0" max="2" step="0.01" value="0.01">
+                    </div>
+                    <div class="control-group">
+                        <label for="decay"> Decay: <span id="decayValue">0.1</span> 秒</label>
+                        <small>从最大音量衰减到持续音量的时间</small>
+                        <input type="range" id="decay" min="0" max="2" step="0.01" value="0.1">
+                    </div>
+                    <div class="control-group">
+                        <label for="sustain"> Sustain: <span id="sustainValue">0.7</span></label>
+                        <small>持续阶段的音量水平（相对于最大音量）</small>
+                        <input type="range" id="sustain" min="0" max="1" step="0.1" value="0.7">
+                    </div>
+                    <div class="control-group">
+                        <label for="release"> Release: <span id="releaseValue">0.3</span> 秒</label>
+                        <small>从持续音量到静音的时间</small>
+                        <input type="range" id="release" min="0" max="2" step="0.01" value="0.3">
+                    </div>
+                    <div class="control-group">
+                        <label for="filterType">滤波器类型</label>
+                        <select id="filterType">
+                            <option value="lowpass">低通滤波</option>
+                            <option value="highpass">高通滤波</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="filter">滤波频率: <span id="filterValue">20000</span> Hz</label>
+                        <small id="filterDesc">过滤掉高于此频率的声音，使音效更柔和</small>
+                        <input type="range" id="filter" min="20" max="20000" value="20000">
+                    </div>
+                    <div class="control-group">
+                        <label for="reverb">空间混响: <span id="reverbValue">0</span></label>
+                        <small>添加空间混响效果，使音效更有空间感</small>
+                        <input type="range" id="reverb" min="0" max="1" step="0.1" value="0">
+                    </div>
+                </div>
+                <div class="export-section">
+                    <h3>导出音效</h3>
+                    <div class="export-options">
+                        <div class="control-group">
+                            <label for="exportFormat">导出格式</label>
+                            <select id="exportFormat">
+                                <option value="wav">WAV</option>
+                                <option value="mp3">MP3</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label for="fileName">文件名</label>
+                            <input type="text" id="fileName" value="sound">
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" id="exportButton">导出音效</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Web Audio API 上下文
+        let audioContext;
+        let analyser;
+        let dataArray;
+        let canvas;
+        let canvasCtx;
+        let animationId;
+
+        // 音效参数
+        const soundParams = {
+            type: 'sine',
+            frequency: 440,
+            duration: 1,
+            volume: 0.5,
+            attack: 0.01,
+            decay: 0.1,
+            sustain: 0.7,
+            release: 0.3,
+            filterType: 'lowpass',
+            filter: 20000,
+            reverb: 0,
+            loop: false
+        };
+
+        // 钢琴音符映射
+        function frequencyToNote(frequency) {
+            const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+            const A4 = 440; // A4的频率
+            const semitone = Math.round(12 * Math.log2(frequency / A4));
+            const octave = Math.floor(semitone / 12) + 4;
+            const noteIndex = (semitone % 12 + 12) % 12;
+            return notes[noteIndex] + octave;
+        }
+
+        // 预设音效
+        const presets = {
+            laser: {
+                type: 'sine',
+                frequency: 800,
+                duration: 0.2,
+                volume: 0.8,
+                attack: 0.01,
+                decay: 0.05,
+                sustain: 0.5,
+                release: 0.1,
+                filterType: 'lowpass',
+                filter: 10000
+            },
+            explosion: {
+                type: 'noise',
+                frequency: 200,
+                duration: 1.5,
+                volume: 1,
+                attack: 0.01,
+                decay: 0.5,
+                sustain: 0.3,
+                release: 0.8,
+                filterType: 'lowpass',
+                filter: 500
+            },
+            jump: {
+                type: 'sine',
+                frequency: 600,
+                duration: 0.3,
+                volume: 0.6,
+                attack: 0.05,
+                decay: 0.1,
+                sustain: 0.5,
+                release: 0.15,
+                filterType: 'lowpass',
+                filter: 8000
+            },
+            coin: {
+                type: 'sine',
+                frequency: 1200,
+                duration: 0.2,
+                volume: 0.5,
+                attack: 0.01,
+                decay: 0.05,
+                sustain: 0.5,
+                release: 0.1,
+                filterType: 'lowpass',
+                filter: 15000
+            },
+            powerup: {
+                type: 'sine',
+                frequency: 800,
+                duration: 0.8,
+                volume: 0.7,
+                attack: 0.1,
+                decay: 0.2,
+                sustain: 0.8,
+                release: 0.5,
+                filterType: 'lowpass',
+                filter: 12000
+            },
+            menu: {
+                type: 'sine',
+                frequency: 440,
+                duration: 0.15,
+                volume: 0.4,
+                attack: 0.01,
+                decay: 0.05,
+                sustain: 0.5,
+                release: 0.05,
+                filterType: 'lowpass',
+                filter: 10000
+            },
+            footstep: {
+                type: 'noise',
+                frequency: 300,
+                duration: 0.1,
+                volume: 0.3,
+                attack: 0.01,
+                decay: 0.03,
+                sustain: 0.5,
+                release: 0.06,
+                filterType: 'lowpass',
+                filter: 2000
+            },
+            hit: {
+                type: 'square',
+                frequency: 200,
+                duration: 0.2,
+                volume: 0.7,
+                attack: 0.01,
+                decay: 0.05,
+                sustain: 0.3,
+                release: 0.1,
+                filterType: 'lowpass',
+                filter: 1000
+            },
+            heal: {
+                type: 'sine',
+                frequency: 600,
+                duration: 1,
+                volume: 0.6,
+                attack: 0.2,
+                decay: 0.3,
+                sustain: 0.8,
+                release: 0.5,
+                filterType: 'lowpass',
+                filter: 8000
+            },
+            error: {
+                type: 'sawtooth',
+                frequency: 200,
+                duration: 0.5,
+                volume: 0.6,
+                attack: 0.01,
+                decay: 0.1,
+                sustain: 0.5,
+                release: 0.3,
+                filterType: 'lowpass',
+                filter: 1000
+            },
+            dice: {
+                type: 'noise',
+                frequency: 500,
+                duration: 0.8,
+                volume: 0.7,
+                attack: 0.01,
+                decay: 0.3,
+                sustain: 0.4,
+                release: 0.4,
+                filterType: 'lowpass',
+                filter: 2000
+            },
+            ak47: {
+                type: 'noise',
+                frequency: 800,
+                duration: 0.3,
+                volume: 0.9,
+                attack: 0.01,
+                decay: 0.1,
+                sustain: 0.3,
+                release: 0.15,
+                filterType: 'lowpass',
+                filter: 1500
+            }
+        };
+
+        // 初始化
+        function init() {
+            // 初始化音频上下文
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 2048;
+            const bufferLength = analyser.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+
+            // 初始化画布
+            canvas = document.getElementById('visualizerCanvas');
+            canvasCtx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            // 初始化音符显示
+            document.getElementById('noteValue').textContent = frequencyToNote(soundParams.frequency);
+
+            // 绑定事件
+            bindEvents();
+
+            // 开始可视化
+            visualize();
+        }
+
+        // 绑定事件
+        function bindEvents() {
+            // 音效类型
+            document.getElementById('soundType').addEventListener('change', function(e) {
+                soundParams.type = e.target.value;
+            });
+
+            // 频率
+            document.getElementById('frequency').addEventListener('input', function(e) {
+                soundParams.frequency = parseFloat(e.target.value);
+                document.getElementById('frequencyValue').textContent = soundParams.frequency;
+                document.getElementById('noteValue').textContent = frequencyToNote(soundParams.frequency);
+            });
+
+            // 持续时间
+            document.getElementById('duration').addEventListener('input', function(e) {
+                soundParams.duration = parseFloat(e.target.value);
+                document.getElementById('durationValue').textContent = soundParams.duration;
+            });
+
+            // 音量
+            document.getElementById('volume').addEventListener('input', function(e) {
+                soundParams.volume = parseFloat(e.target.value);
+                document.getElementById('volumeValue').textContent = soundParams.volume;
+            });
+
+            // 循环播放
+            document.getElementById('loop').addEventListener('change', function(e) {
+                soundParams.loop = e.target.checked;
+            });
+
+            // Attack
+            document.getElementById('attack').addEventListener('input', function(e) {
+                soundParams.attack = parseFloat(e.target.value);
+                document.getElementById('attackValue').textContent = soundParams.attack;
+            });
+
+            // Decay
+            document.getElementById('decay').addEventListener('input', function(e) {
+                soundParams.decay = parseFloat(e.target.value);
+                document.getElementById('decayValue').textContent = soundParams.decay;
+            });
+
+            // Sustain
+            document.getElementById('sustain').addEventListener('input', function(e) {
+                soundParams.sustain = parseFloat(e.target.value);
+                document.getElementById('sustainValue').textContent = soundParams.sustain;
+            });
+
+            // Release
+            document.getElementById('release').addEventListener('input', function(e) {
+                soundParams.release = parseFloat(e.target.value);
+                document.getElementById('releaseValue').textContent = soundParams.release;
+            });
+
+            // 滤波器类型
+            document.getElementById('filterType').addEventListener('change', function(e) {
+                soundParams.filterType = e.target.value;
+                // 更新滤波器描述
+                const filterDesc = document.getElementById('filterDesc');
+                if (soundParams.filterType === 'lowpass') {
+                    filterDesc.textContent = '过滤掉高于此频率的声音，使音效更柔和';
+                } else {
+                    filterDesc.textContent = '过滤掉低于此频率的声音，使音效更尖锐';
+                }
+            });
+
+            // 滤波器
+            document.getElementById('filter').addEventListener('input', function(e) {
+                soundParams.filter = parseFloat(e.target.value);
+                document.getElementById('filterValue').textContent = soundParams.filter;
+            });
+
+            // 混响
+            document.getElementById('reverb').addEventListener('input', function(e) {
+                soundParams.reverb = parseFloat(e.target.value);
+                document.getElementById('reverbValue').textContent = soundParams.reverb;
+            });
+
+            // 播放按钮
+            document.getElementById('playButton').addEventListener('click', function() {
+                playSound();
+            });
+
+            // 停止按钮
+            document.getElementById('stopButton').addEventListener('click', function() {
+                stopSound();
+            });
+
+            // 导出按钮
+            document.getElementById('exportButton').addEventListener('click', function() {
+                exportSound();
+            });
+
+            // 预设项点击事件
+            document.querySelectorAll('.preset-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const presetName = item.dataset.preset;
+                    applyPreset(presetName);
+                    
+                    // 移除所有预设项的active类
+                    document.querySelectorAll('.preset-item').forEach(i => {
+                        i.classList.remove('active');
+                    });
+                    // 为当前点击的预设项添加active类
+                    item.classList.add('active');
+                });
+            });
+        }
+
+        // 应用预设
+        function applyPreset(presetName) {
+            const preset = presets[presetName];
+            if (preset) {
+                // 更新参数
+                soundParams.type = preset.type;
+                soundParams.frequency = preset.frequency;
+                soundParams.duration = preset.duration;
+                soundParams.volume = preset.volume;
+                soundParams.attack = preset.attack;
+                soundParams.decay = preset.decay;
+                soundParams.sustain = preset.sustain;
+                soundParams.release = preset.release;
+                soundParams.filterType = preset.filterType;
+                soundParams.filter = preset.filter;
+                soundParams.reverb = preset.reverb || 0;
+
+                // 更新UI
+                document.getElementById('soundType').value = preset.type;
+                document.getElementById('frequency').value = preset.frequency;
+                document.getElementById('frequencyValue').textContent = preset.frequency;
+                document.getElementById('noteValue').textContent = frequencyToNote(preset.frequency);
+                document.getElementById('duration').value = preset.duration;
+                document.getElementById('durationValue').textContent = preset.duration;
+                document.getElementById('volume').value = preset.volume;
+                document.getElementById('volumeValue').textContent = preset.volume;
+                document.getElementById('attack').value = preset.attack;
+                document.getElementById('attackValue').textContent = preset.attack;
+                document.getElementById('decay').value = preset.decay;
+                document.getElementById('decayValue').textContent = preset.decay;
+                document.getElementById('sustain').value = preset.sustain;
+                document.getElementById('sustainValue').textContent = preset.sustain;
+                document.getElementById('release').value = preset.release;
+                document.getElementById('releaseValue').textContent = preset.release;
+                document.getElementById('filterType').value = preset.filterType;
+                // 更新滤波器描述
+                const filterDesc = document.getElementById('filterDesc');
+                if (preset.filterType === 'lowpass') {
+                    filterDesc.textContent = '过滤掉高于此频率的声音，使音效更柔和';
+                } else {
+                    filterDesc.textContent = '过滤掉低于此频率的声音，使音效更尖锐';
+                }
+                document.getElementById('filter').value = preset.filter;
+                document.getElementById('filterValue').textContent = preset.filter;
+                document.getElementById('reverb').value = preset.reverb || 0;
+                document.getElementById('reverbValue').textContent = preset.reverb || 0;
+            }
+        }
+
+        // 播放音效
+        function playSound() {
+            // 确保音频上下文已启动
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+
+            // 创建振荡器
+            let oscillator;
+            
+            // 设置波形类型
+            if (soundParams.type === 'noise') {
+                // 白噪声生成
+                const bufferSize = audioContext.sampleRate * soundParams.duration;
+                const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+                oscillator = audioContext.createBufferSource();
+                oscillator.buffer = buffer;
+                if (soundParams.loop) {
+                    oscillator.loop = true;
+                    oscillator.loopStart = 0;
+                    oscillator.loopEnd = soundParams.duration;
+                }
+            } else if (soundParams.type === 'pinknoise') {
+                // 粉噪声生成
+                const bufferSize = audioContext.sampleRate * soundParams.duration;
+                const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+                const data = buffer.getChannelData(0);
+                let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+                for (let i = 0; i < bufferSize; i++) {
+                    const white = Math.random() * 2 - 1;
+                    b0 = 0.99886 * b0 + white * 0.0555179;
+                    b1 = 0.99332 * b1 + white * 0.0750759;
+                    b2 = 0.96900 * b2 + white * 0.1538520;
+                    b3 = 0.86650 * b3 + white * 0.3104856;
+                    b4 = 0.55000 * b4 + white * 0.5329522;
+                    b5 = -0.7616 * b5 - white * 0.0168980;
+                    data[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+                    data[i] *= 0.11;
+                    b6 = white * 0.115926;
+                }
+                oscillator = audioContext.createBufferSource();
+                oscillator.buffer = buffer;
+                if (soundParams.loop) {
+                    oscillator.loop = true;
+                    oscillator.loopStart = 0;
+                    oscillator.loopEnd = soundParams.duration;
+                }
+            } else {
+                oscillator = audioContext.createOscillator();
+                oscillator.type = soundParams.type;
+                oscillator.frequency.setValueAtTime(soundParams.frequency, audioContext.currentTime);
+            }
+
+            // 创建滤波器
+            const filter = audioContext.createBiquadFilter();
+            filter.type = soundParams.filterType;
+            filter.frequency.setValueAtTime(soundParams.filter, audioContext.currentTime);
+
+            // 创建音量控制
+            const gainNode = audioContext.createGain();
+
+            // 设置包络
+            const now = audioContext.currentTime;
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(soundParams.volume, now + soundParams.attack);
+            gainNode.gain.linearRampToValueAtTime(soundParams.volume * soundParams.sustain, now + soundParams.attack + soundParams.decay);
+            gainNode.gain.setValueAtTime(soundParams.volume * soundParams.sustain, now + soundParams.duration - soundParams.release);
+            gainNode.gain.linearRampToValueAtTime(0, now + soundParams.duration);
+
+            // 连接节点
+            oscillator.connect(filter);
+            
+            // 添加混响效果
+            if (soundParams.reverb > 0) {
+                // 创建混响效果
+                const convolver = audioContext.createConvolver();
+                
+                // 创建一个简单的混响脉冲响应
+                const length = audioContext.sampleRate * 2;
+                const impulse = audioContext.createBuffer(1, length, audioContext.sampleRate);
+                const impulseData = impulse.getChannelData(0);
+                
+                for (let i = 0; i < length; i++) {
+                    // 指数衰减的白噪声
+                    impulseData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2);
+                }
+                
+                convolver.buffer = impulse;
+                
+                // 创建混响增益
+                const reverbGain = audioContext.createGain();
+                reverbGain.gain.setValueAtTime(soundParams.reverb, audioContext.currentTime);
+                
+                // 创建干声增益
+                const dryGain = audioContext.createGain();
+                dryGain.gain.setValueAtTime(1 - soundParams.reverb, audioContext.currentTime);
+                
+                // 连接混响
+                filter.connect(convolver);
+                convolver.connect(reverbGain);
+                reverbGain.connect(gainNode);
+                filter.connect(dryGain);
+                dryGain.connect(gainNode);
+            } else {
+                // 没有混响时直接连接
+                filter.connect(gainNode);
+            }
+            
+            gainNode.connect(analyser);
+            analyser.connect(audioContext.destination);
+
+            // 开始播放
+            oscillator.start();
+
+            // 处理循环播放
+            if (soundParams.loop) {
+                // 对于噪声类型，使用内置的loop属性
+                if (soundParams.type === 'noise' || soundParams.type === 'pinknoise') {
+                    // 噪声类型已经设置了loop属性，不需要调用stop
+                } else {
+                    // 对于其他类型，在播放完成后重新创建振荡器
+                    oscillator.stop(now + soundParams.duration);
+                    oscillator.onended = function() {
+                        // 延迟一小段时间再播放，确保音频上下文有时间处理
+                        setTimeout(playSound, 50);
+                    };
+                }
+            } else {
+                // 不循环时，正常停止
+                oscillator.stop(now + soundParams.duration);
+            }
+        }
+
+        // 停止音效
+        function stopSound() {
+            // 停止所有音频
+            if (audioContext) {
+                audioContext.close().then(() => {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    analyser = audioContext.createAnalyser();
+                    analyser.fftSize = 2048;
+                    const bufferLength = analyser.frequencyBinCount;
+                    dataArray = new Uint8Array(bufferLength);
+                    analyser.connect(audioContext.destination);
+                });
+            }
+        }
+
+        // 导出音效
+        function exportSound() {
+            // 这里实现导出功能
+            // 由于Web Audio API的限制，完整的导出需要使用额外的库
+            // 这里我们只做一个简单的实现
+            alert('导出功能正在开发中...');
+        }
+
+        // 可视化
+        function visualize() {
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+
+            animationId = requestAnimationFrame(visualize);
+
+            analyser.getByteTimeDomainData(dataArray);
+
+            canvasCtx.fillStyle = '#000';
+            canvasCtx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+            canvasCtx.lineWidth = 2;
+            canvasCtx.strokeStyle = '#76b900';
+
+            canvasCtx.beginPath();
+
+            const sliceWidth = canvasWidth * 1.0 / dataArray.length;
+            let x = 0;
+
+            for (let i = 0; i < dataArray.length; i++) {
+                const v = dataArray[i] / 128.0;
+                const y = v * canvasHeight / 2;
+
+                if (i === 0) {
+                    canvasCtx.moveTo(x, y);
+                } else {
+                    canvasCtx.lineTo(x, y);
+                }
+
+                x += sliceWidth;
+            }
+
+            canvasCtx.lineTo(canvasWidth, canvasHeight / 2);
+            canvasCtx.stroke();
+        }
+
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
