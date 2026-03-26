@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片水印合成工具</title>
+    <link rel="stylesheet" href="../GlobalStyle.CSS">
+    <style>
+        .main-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .sidebar {
+            background-color: #1A1A1A;
+            border-radius: 8px;
+            padding: 24px;
+            border: 1px solid #333333;
+            height: fit-content;
+        }
+
+        .section {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #333333;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #76B900;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .upload-area {
+            border: 2px dashed #333333;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #222222;
+        }
+
+        .upload-area:hover {
+            border-color: #76B900;
+            background-color: #1A1A1A;
+        }
+
+        .upload-area.dragover {
+            border-color: #76B900;
+            background-color: rgba(118, 185, 0, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .upload-text {
+            font-size: 14px;
+            color: #B3B3B3;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .resolution-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .resolution-btn {
+            padding: 12px 16px;
+            border: 1px solid #333333;
+            background-color: #222222;
+            color: #FFFFFF;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .resolution-btn:hover {
+            border-color: #555555;
+        }
+
+        .resolution-btn.active {
+            border-color: #76B900;
+            background-color: rgba(118, 185, 0, 0.1);
+        }
+
+        .resolution-btn .res-name {
+            font-weight: 600;
+        }
+
+        .resolution-btn .res-size {
+            font-size: 12px;
+            color: #B3B3B3;
+        }
+
+        .watermark-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .watermark-item {
+            aspect-ratio: 1;
+            border: 2px solid #333333;
+            border-radius: 4px;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background-color: #222222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .watermark-item:hover {
+            border-color: #555555;
+        }
+
+        .watermark-item.active {
+            border-color: #76B900;
+            box-shadow: 0 0 0 2px rgba(118, 185, 0, 0.3);
+        }
+
+        .watermark-item img {
+            max-width: 80%;
+            max-height: 80%;
+            object-fit: contain;
+        }
+
+        .watermark-item .empty-state {
+            font-size: 12px;
+            color: #666666;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .anchor-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .anchor-btn {
+            padding: 12px;
+            border: 1px solid #333333;
+            background-color: #222222;
+            color: #FFFFFF;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .anchor-btn:hover {
+            border-color: #555555;
+        }
+
+        .anchor-btn.active {
+            border-color: #76B900;
+            background-color: rgba(118, 185, 0, 0.1);
+        }
+
+        .scale-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .scale-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            background-color: #333333;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .scale-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background-color: #76B900;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .scale-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 10px rgba(118, 185, 0, 0.5);
+        }
+
+        .scale-value {
+            min-width: 50px;
+            text-align: center;
+            font-weight: 600;
+            color: #76B900;
+        }
+
+        .export-btn {
+            width: 100%;
+            padding: 16px;
+            background-color: #76B900;
+            border: none;
+            border-radius: 4px;
+            color: #000000;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .export-btn:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+
+        .export-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            filter: none;
+        }
+
+        .preview-area {
+            background-color: #1A1A1A;
+            border-radius: 8px;
+            padding: 24px;
+            border: 1px solid #333333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 600px;
+        }
+
+        .preview-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 960px;
+            aspect-ratio: 16 / 9;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            background-color: #000000;
+        }
+
+        .preview-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .preview-container canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .preview-placeholder {
+            text-align: center;
+            color: #666666;
+        }
+
+        .preview-placeholder .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .preview-info {
+            margin-top: 16px;
+            padding: 12px 20px;
+            background-color: #222222;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #B3B3B3;
+            border: 1px solid #333333;
+        }
+
+        .margin-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .margin-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            background-color: #333333;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .margin-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background-color: #76B900;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .margin-value {
+            min-width: 50px;
+            text-align: center;
+            font-weight: 600;
+            color: #76B900;
+        }
+
+        .panel-divider {
+            border-left: 3px solid #76B900;
+            padding-left: 12px;
+            margin-bottom: 16px;
+        }
+
+        .panel-divider.secondary {
+            border-left-color: #4a9eff;
+        }
+
+        .panel-divider.secondary .section-title {
+            color: #4a9eff;
+        }
+
+        .margin-label {
+            font-size: 11px;
+            color: #666666;
+            margin-bottom: 4px;
+        }
+
+        @media (max-width: 900px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>图片水印合成工具</h1>
+        
+        <div class="main-layout">
+            <div class="sidebar">
+                <div class="section">
+                    <div class="section-title">上传底图</div>
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">📷</div>
+                        <div class="upload-text">点击或拖拽上传图片</div>
+                    </div>
+                    <input type="file" id="baseImageInput" accept="image/*">
+                </div>
+
+                <div class="section">
+                    <div class="section-title">输出分辨率</div>
+                    <div class="resolution-options">
+                        <button class="resolution-btn active" data-width="1920" data-height="1080">
+                            <span class="res-name">1080p</span>
+                            <span class="res-size">1920 × 1080</span>
+                        </button>
+                        <button class="resolution-btn" data-width="2560" data-height="1440">
+                            <span class="res-name">2K</span>
+                            <span class="res-size">2560 × 1440</span>
+                        </button>
+                        <button class="resolution-btn" data-width="3840" data-height="2160">
+                            <span class="res-name">4K</span>
+                            <span class="res-size">3840 × 2160</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">上传水印 (最多2个)</div>
+                    <div class="upload-area" id="watermarkUploadArea" style="padding: 15px;">
+                        <div class="upload-icon" style="font-size: 32px;">🏷️</div>
+                        <div class="upload-text" style="font-size: 12px;">点击上传水印图片</div>
+                    </div>
+                    <input type="file" id="watermarkInput" accept="image/*">
+                </div>
+
+                <div class="section" id="watermarkListSection" style="display: none;">
+                    <div class="section-title">已上传水印 (点击切换编辑)</div>
+                    <div class="watermark-list" id="watermarkList">
+                        <div class="watermark-item">
+                            <div class="empty-state">暂无水印</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="watermark1Panel">
+                    <div class="section panel-divider">
+                        <div class="section-title">水印 1 设置</div>
+                        <div class="anchor-options" id="anchorOptions1">
+                            <button class="anchor-btn" data-anchor="top-left" data-wm="1">↖️ 左上</button>
+                            <button class="anchor-btn" data-anchor="top-right" data-wm="1">↗️ 右上</button>
+                            <button class="anchor-btn" data-anchor="bottom-left" data-wm="1">↙️ 左下</button>
+                            <button class="anchor-btn active" data-anchor="bottom-right" data-wm="1">↘️ 右下</button>
+                        </div>
+                    </div>
+
+                    <div class="section panel-divider">
+                        <div class="section-title">水印 1 边距</div>
+                        <div style="margin-bottom: 10px;">
+                            <div class="margin-label">水平边距 X</div>
+                            <div class="margin-control">
+                                <input type="range" class="margin-slider" id="marginXSlider1" min="0" max="500" value="30" data-wm="1">
+                                <span class="margin-value" id="marginXValue1">30px</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="margin-label">垂直边距 Y</div>
+                            <div class="margin-control">
+                                <input type="range" class="margin-slider" id="marginYSlider1" min="0" max="500" value="30" data-wm="1">
+                                <span class="margin-value" id="marginYValue1">30px</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section panel-divider">
+                        <div class="section-title">水印 1 缩放</div>
+                        <div class="scale-control">
+                            <input type="range" class="scale-slider" id="scaleSlider1" min="0.1" max="3" step="0.1" value="1" data-wm="1">
+                            <span class="scale-value" id="scaleValue1">1.0x</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="watermark2Panel" style="display: none;">
+                    <div class="section panel-divider secondary">
+                        <div class="section-title" style="color: #4a9eff;">水印 2 设置</div>
+                        <div class="anchor-options" id="anchorOptions2">
+                            <button class="anchor-btn" data-anchor="top-left" data-wm="2">↖️ 左上</button>
+                            <button class="anchor-btn active" data-anchor="top-right" data-wm="2">↗️ 右上</button>
+                            <button class="anchor-btn" data-anchor="bottom-left" data-wm="2">↙️ 左下</button>
+                            <button class="anchor-btn" data-anchor="bottom-right" data-wm="2">↘️ 右下</button>
+                        </div>
+                    </div>
+
+                    <div class="section panel-divider secondary">
+                        <div class="section-title" style="color: #4a9eff;">水印 2 边距</div>
+                        <div style="margin-bottom: 10px;">
+                            <div class="margin-label">水平边距 X</div>
+                            <div class="margin-control">
+                                <input type="range" class="margin-slider" id="marginXSlider2" min="0" max="500" value="30" data-wm="2">
+                                <span class="margin-value" id="marginXValue2">30px</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="margin-label">垂直边距 Y</div>
+                            <div class="margin-control">
+                                <input type="range" class="margin-slider" id="marginYSlider2" min="0" max="500" value="30" data-wm="2">
+                                <span class="margin-value" id="marginYValue2">30px</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section panel-divider secondary">
+                        <div class="section-title" style="color: #4a9eff;">水印 2 缩放</div>
+                        <div class="scale-control">
+                            <input type="range" class="scale-slider" id="scaleSlider2" min="0.1" max="3" step="0.1" value="1" data-wm="2">
+                            <span class="scale-value" id="scaleValue2">1.0x</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">底部 Banner</div>
+                    <div class="scale-control">
+                        <input type="range" class="scale-slider" id="bannerSlider" min="0" max="30" step="1" value="5">
+                        <span class="scale-value" id="bannerValue">5%</span>
+                    </div>
+                </div>
+
+                <button class="export-btn" id="exportBtn" disabled>导出图片</button>
+            </div>
+
+            <div class="preview-area">
+                <div class="preview-placeholder" id="previewPlaceholder">
+                    <div class="icon">🖼️</div>
+                    <div>请上传底图以开始编辑</div>
+                </div>
+                <div class="preview-wrapper" id="previewWrapper" style="display: none;">
+                    <div class="preview-container">
+                        <canvas id="previewCanvas"></canvas>
+                    </div>
+                </div>
+                <div class="preview-info" id="previewInfo" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 状态管理
+        const state = {
+            baseImage: null,
+            watermarkImage: null,
+            resolution: { width: 1920, height: 1080 },
+            anchor: 'bottom-right',
+            scale: 1,
+            marginX: 30,
+            marginY: 30,
+            bannerPercent: 5,
+            watermarks: [],
+            activeWatermarkIndex: 0
+        };
+
+        // DOM 元素
+        const uploadArea = document.getElementById('uploadArea');
+        const baseImageInput = document.getElementById('baseImageInput');
+        const watermarkUploadArea = document.getElementById('watermarkUploadArea');
+        const watermarkInput = document.getElementById('watermarkInput');
+        const watermarkListSection = document.getElementById('watermarkListSection');
+        const watermarkList = document.getElementById('watermarkList');
+        const watermark2Panel = document.getElementById('watermark2Panel');
+        const previewPlaceholder = document.getElementById('previewPlaceholder');
+        const previewWrapper = document.getElementById('previewWrapper');
+        const previewCanvas = document.getElementById('previewCanvas');
+        const previewInfo = document.getElementById('previewInfo');
+        const exportBtn = document.getElementById('exportBtn');
+        const bannerSlider = document.getElementById('bannerSlider');
+        const bannerValue = document.getElementById('bannerValue');
+
+        // 初始化
+        function init() {
+            setupEventListeners();
+        }
+
+        // 添加水印
+        function addWatermark(file) {
+            if (state.watermarks.length >= 2) {
+                alert('最多只能添加2个水印');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const watermarkData = {
+                        src: e.target.result,
+                        img: img,
+                        name: file.name,
+                        anchor: state.watermarks.length === 0 ? 'bottom-right' : 'top-right',
+                        scale: 1,
+                        marginX: 30,
+                        marginY: 30
+                    };
+                    state.watermarks.push(watermarkData);
+                    renderWatermarkList();
+                    // 显示对应面板
+                    if (state.watermarks.length === 2) {
+                        watermark2Panel.style.display = 'block';
+                    }
+                    updatePreview();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 渲染水印列表
+        function renderWatermarkList() {
+            if (state.watermarks.length === 0) {
+                watermarkListSection.style.display = 'none';
+                watermarkList.innerHTML = '<div class="watermark-item"><div class="empty-state">暂无水印</div></div>';
+                return;
+            }
+
+            watermarkListSection.style.display = 'block';
+            watermarkList.innerHTML = state.watermarks.map((wm, index) => `
+                <div class="watermark-item ${state.activeWatermarkIndex === index ? 'active' : ''}" data-index="${index}">
+                    <img src="${wm.src}" alt="水印 ${index + 1}">
+                </div>
+            `).join('');
+        }
+
+        // 选择水印（切换编辑）
+        function selectWatermark(index) {
+            if (index < 0 || index >= state.watermarks.length) return;
+            state.activeWatermarkIndex = index;
+            renderWatermarkList();
+        }
+
+        // 更新水印参数
+        function updateWatermarkParams(index, key, value) {
+            if (index >= 0 && index < state.watermarks.length) {
+                state.watermarks[index][key] = value;
+                updatePreview();
+            }
+        }
+
+        // 设置事件监听
+        function setupEventListeners() {
+            // 上传区域
+            uploadArea.addEventListener('click', () => baseImageInput.click());
+            
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    loadBaseImage(file);
+                }
+            });
+
+            baseImageInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    loadBaseImage(file);
+                }
+            });
+
+            // 分辨率选择
+            document.querySelectorAll('.resolution-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.resolution-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    state.resolution = {
+                        width: parseInt(btn.dataset.width),
+                        height: parseInt(btn.dataset.height)
+                    };
+                    updatePreview();
+                });
+            });
+
+            // 水印上传区域
+            watermarkUploadArea.addEventListener('click', () => watermarkInput.click());
+
+            watermarkUploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                watermarkUploadArea.classList.add('dragover');
+            });
+
+            watermarkUploadArea.addEventListener('dragleave', () => {
+                watermarkUploadArea.classList.remove('dragover');
+            });
+
+            watermarkUploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                watermarkUploadArea.classList.remove('dragover');
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    addWatermark(file);
+                }
+            });
+
+            watermarkInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    addWatermark(file);
+                }
+            });
+
+            // 水印选择
+            watermarkList.addEventListener('click', (e) => {
+                const item = e.target.closest('.watermark-item');
+                if (item && item.dataset.index) {
+                    const index = parseInt(item.dataset.index);
+                    selectWatermark(index);
+                }
+            });
+
+            // 水印1锚点选择
+            document.querySelectorAll('#anchorOptions1 .anchor-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#anchorOptions1 .anchor-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    updateWatermarkParams(0, 'anchor', btn.dataset.anchor);
+                });
+            });
+
+            // 水印2锚点选择
+            document.querySelectorAll('#anchorOptions2 .anchor-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#anchorOptions2 .anchor-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    updateWatermarkParams(1, 'anchor', btn.dataset.anchor);
+                });
+            });
+
+            // 水印1缩放控制
+            document.getElementById('scaleSlider1').addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                document.getElementById('scaleValue1').textContent = value.toFixed(1) + 'x';
+                updateWatermarkParams(0, 'scale', value);
+            });
+
+            // 水印2缩放控制
+            document.getElementById('scaleSlider2').addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                document.getElementById('scaleValue2').textContent = value.toFixed(1) + 'x';
+                updateWatermarkParams(1, 'scale', value);
+            });
+
+            // 水印1水平边距控制
+            document.getElementById('marginXSlider1').addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                document.getElementById('marginXValue1').textContent = value + 'px';
+                updateWatermarkParams(0, 'marginX', value);
+            });
+
+            // 水印2水平边距控制
+            document.getElementById('marginXSlider2').addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                document.getElementById('marginXValue2').textContent = value + 'px';
+                updateWatermarkParams(1, 'marginX', value);
+            });
+
+            // 水印1垂直边距控制
+            document.getElementById('marginYSlider1').addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                document.getElementById('marginYValue1').textContent = value + 'px';
+                updateWatermarkParams(0, 'marginY', value);
+            });
+
+            // 水印2垂直边距控制
+            document.getElementById('marginYSlider2').addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                document.getElementById('marginYValue2').textContent = value + 'px';
+                updateWatermarkParams(1, 'marginY', value);
+            });
+
+            // Banner 比例控制
+            bannerSlider.addEventListener('input', (e) => {
+                state.bannerPercent = parseInt(e.target.value);
+                bannerValue.textContent = state.bannerPercent + '%';
+                updatePreview();
+            });
+
+            // 导出
+            exportBtn.addEventListener('click', exportImage);
+        }
+
+        // 加载底图
+        function loadBaseImage(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    state.baseImage = img;
+                    previewPlaceholder.style.display = 'none';
+                    previewWrapper.style.display = 'block';
+                    previewInfo.style.display = 'block';
+                    exportBtn.disabled = false;
+                    updatePreview();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 更新预览
+        function updatePreview() {
+            if (!state.baseImage) return;
+
+            const canvas = previewCanvas;
+            const ctx = canvas.getContext('2d');
+            const { width, height } = state.resolution;
+
+            canvas.width = width;
+            canvas.height = height;
+
+            // 清空画布
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, width, height);
+
+            // 绘制底图（水平填满，垂直居中）
+            drawBaseImage(ctx, state.baseImage, width, height);
+
+            // 绘制底部 Banner（在底图之上，水印之下）
+            if (state.bannerPercent > 0) {
+                const bannerHeight = height * (state.bannerPercent / 100);
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, height - bannerHeight, width, bannerHeight);
+            }
+
+            // 绘制所有水印（在最上层）
+            state.watermarks.forEach(wm => {
+                drawWatermark(ctx, wm, width, height);
+            });
+
+            // 更新信息
+            updatePreviewInfo();
+        }
+
+        // 绘制底图（水平填满，垂直居中裁切或留黑边）
+        function drawBaseImage(ctx, img, targetWidth, targetHeight) {
+            const imgRatio = img.width / img.height;
+            const targetRatio = targetWidth / targetHeight;
+
+            let drawWidth, drawHeight, offsetX, offsetY;
+
+            // 水平填满，计算垂直方向
+            drawWidth = targetWidth;
+            drawHeight = targetWidth / imgRatio;
+
+            if (drawHeight >= targetHeight) {
+                // 图片比目标高，垂直居中裁切
+                offsetX = 0;
+                offsetY = (targetHeight - drawHeight) / 2;
+            } else {
+                // 图片比目标矮，垂直居中显示（上下留黑边）
+                offsetX = 0;
+                offsetY = (targetHeight - drawHeight) / 2;
+            }
+
+            ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+        }
+
+        // 绘制水印
+        function drawWatermark(ctx, wm, canvasWidth, canvasHeight) {
+            const { img, anchor, scale, marginX, marginY } = wm;
+
+            const scaledWidth = img.width * scale;
+            const scaledHeight = img.height * scale;
+
+            let x, y;
+
+            switch (anchor) {
+                case 'top-left':
+                    x = marginX;
+                    y = marginY;
+                    break;
+                case 'top-right':
+                    x = canvasWidth - scaledWidth - marginX;
+                    y = marginY;
+                    break;
+                case 'bottom-left':
+                    x = marginX;
+                    y = canvasHeight - scaledHeight - marginY;
+                    break;
+                case 'bottom-right':
+                default:
+                    x = canvasWidth - scaledWidth - marginX;
+                    y = canvasHeight - scaledHeight - marginY;
+                    break;
+            }
+
+            ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+        }
+
+        // 更新预览信息
+        function updatePreviewInfo() {
+            const info = [];
+            info.push(`分辨率: ${state.resolution.width} × ${state.resolution.height}`);
+            if (state.baseImage) {
+                info.push(`底图: ${state.baseImage.width} × ${state.baseImage.height}`);
+            }
+            info.push(`水印: ${state.watermarks.length}/2`);
+            info.push(`Banner: ${state.bannerPercent}%`);
+            previewInfo.textContent = info.join(' | ');
+        }
+
+        // 导出图片
+        function exportImage() {
+            if (!state.baseImage) return;
+
+            const link = document.createElement('a');
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+            link.download = `watermarked_${timestamp}.png`;
+            link.href = previewCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // 启动
+        init();
+    </script>
+</body>
+</html>
